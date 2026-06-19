@@ -1,12 +1,72 @@
 /* ============================================
-   HMG SermonScribe v2 — Live Broadcast Module
-   BroadcastChannel for same-device projector,
-   periodic QR share for congregation refresh.
-   ============================================ */
-export class LiveBroadcast{constructor(sessionId){this.session=sessionId||'hmg-'+Date.now().toString(36);this.bc=null;this.lastSent='';this.init();}
-init(){if(typeof BroadcastChannel!=='undefined'){this.bc=new BroadcastChannel('hmg-sermonscribe-live');this.bc.onmessage=(e)=>{if(e.data?.type==='ping'&&e.data?.session===this.session){this.emit('ping',e.data);}};}}
-emit(type,data){if(this.bc){this.bc.postMessage({type,session:this.session,...data});}}
-broadcastTranscript(text,elapsed){const payload={type:'transcript',session:this.session,text,elapsed,timestamp:Date.now()};this.lastSent=text;this.emit('transcript',payload);try{localStorage.setItem('hmg-live-'+this.session,JSON.stringify(payload));}catch(_){}}
-getShareURL(){return `${window.location.origin}${window.location.pathname.replace('index.html','')}live.html?session=${this.session}`;}
-getLastPayload(){try{return JSON.parse(localStorage.getItem('hmg-live-'+this.session)||'null');}catch(_){return null;}}
+ HMG SermonScribe v3 — Live Broadcast Engine
+ BroadcastChannel (same-origin) + localStorage fallback (cross-tab).
+ Congregation caption sharing with QR code.
+ ============================================ */
+
+export class LiveBroadcast {
+  constructor() {
+    this.channel = null;
+    this.fallbackKey = 'hmg-sermonscribe-live-v3';
+    this.listeners = [];
+    this.init();
+  }
+
+  init() {
+    if (typeof BroadcastChannel !== 'undefined') {
+      try {
+        this.channel = new BroadcastChannel('hmg-sermonscribe-live-v3');
+        this.channel.onmessage = (e) => { this.notify(e.data); };
+      } catch (e) { this.channel = null; }
+    }
+    this.initStorageFallback();
+  }
+
+  initStorageFallback() {
+    window.addEventListener('storage', (e) => {
+      if (e.key === this.fallbackKey) {
+        try { const data = JSON.parse(e.newValue); this.notify(data); } catch {}
+      }
+    });
+  }
+
+  broadcastTranscript(text, elapsed = 0) {
+    const payload = { text, elapsed, timestamp: Date.now() };
+    if (this.channel) { try { this.channel.postMessage(payload); } catch {} }
+    try { localStorage.setItem(this.fallbackKey, JSON.stringify(payload)); } catch {}
+  }
+
+  onMessage(callback) { this.listeners.push(callback); }
+
+  notify(data) { this.listeners.forEach(cb => { try { cb(data); } catch {} }); }
+
+  getShareURL() {
+    return `${window.location.origin}${window.location.pathname.replace(/index\.html/, 'live.html')}`;
+  }
+}
+
+export function initLivePage() {
+  const broadcast = new LiveBroadcast();
+  const el = document.getElementById('live-caption');
+  const meta = document.getElementById('live-meta');
+  if (!el) return;
+
+  broadcast.onMessage((data) => {
+    if (data.text) {
+      el.textContent = data.text;
+      if (meta) meta.textContent = `Last updated: ${new Date(data.timestamp).toLocaleTimeString()}`;
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+  });
+
+  // Also read latest on load
+  try {
+    const latest = localStorage.getItem('hmg-sermonscribe-live-v3');
+    if (latest) { const data = JSON.parse(latest); if (data.text) el.textContent = data.text; }
+  } catch {}
+
+  // Screen orientation lock for live captions
+  if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock('landscape').catch(() => {});
+  }
 }

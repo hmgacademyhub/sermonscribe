@@ -1,21 +1,352 @@
 /* ============================================
-   HMG SermonScribe v2 — IndexedDB Persistence
-   Series, playlists, backups, and local search.
-   ============================================ */
-const DB_NAME='HMG_SermonScribe_v2';const DB_VERSION=2;
-function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,DB_VERSION);req.onerror=()=>reject(req.error);req.onsuccess=()=>resolve(req.result);req.onupgradeneeded=(e)=>{const db=e.target.result;if(!db.objectStoreNames.contains('sermons')){const store=db.createObjectStore('sermons',{keyPath:'id'});store.createIndex('byDate','updatedAt',{unique:false});store.createIndex('byTitle','title',{unique:false});store.createIndex('bySeries','series',{unique:false});}if(!db.objectStoreNames.contains('settings')){db.createObjectStore('settings',{keyPath:'key'});}if(!db.objectStoreNames.contains('flashcards')){db.createObjectStore('flashcards',{keyPath:'id'});}if(!db.objectStoreNames.contains('series')){db.createObjectStore('series',{keyPath:'name'});}};});}
-export async function saveSermon(sermon){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction('sermons','readwrite');const payload={...sermon,updatedAt:new Date().toISOString()};const req=tx.objectStore('sermons').put(payload);req.onsuccess=()=>resolve(payload);req.onerror=()=>reject(req.error);});}
-export async function getSermon(id){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction('sermons','readonly');const req=tx.objectStore('sermons').get(id);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);});}
-export async function loadSermons(limit=200,series=null){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction('sermons','readonly');const store=tx.objectStore('sermons');const results=[];const req=series?store.index('bySeries').openCursor(IDBKeyRange.only(series),'prev'):store.index('byDate').openCursor(null,'prev');req.onsuccess=(e)=>{const cursor=e.target.result;if(!cursor||results.length>=limit){resolve(results);return;}results.push(cursor.value);cursor.continue();};req.onerror=()=>reject(req.error);});}
-export async function deleteSermon(id){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction('sermons','readwrite');const req=tx.objectStore('sermons').delete(id);req.onsuccess=()=>resolve(true);req.onerror=()=>reject(req.error);});}
-export async function searchSermons(query){const all=await loadSermons(500);const q=query.toLowerCase();return all.filter(s=>(s.title||'').toLowerCase().includes(q)||(s.content||'').toLowerCase().includes(q)||(s.tags||[]).some(t=>t.toLowerCase().includes(q))||(s.series||'').toLowerCase().includes(q)||(s.preacher||'').toLowerCase().includes(q));}
-export async function saveSettings(key,value){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction('settings','readwrite');const req=tx.objectStore('settings').put({key,value,updatedAt:new Date().toISOString()});req.onsuccess=()=>resolve(true);req.onerror=()=>reject(req.error);});}
-export async function getSettings(key){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction('settings','readonly');const req=tx.objectStore('settings').get(key);req.onsuccess=()=>resolve(req.result?.value??null);req.onerror=()=>reject(req.error);});}
-export async function getAllSeries(){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction('series','readonly');const results=[];const req=tx.objectStore('series').openCursor();req.onsuccess=(e)=>{const cursor=e.target.result;if(!cursor){resolve(results);return;}results.push(cursor.value);cursor.continue();};req.onerror=()=>reject(req.error);});}
-export async function saveSeries(name,meta={}){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction('series','readwrite');const req=tx.objectStore('series').put({name,createdAt:new Date().toISOString(),...meta});req.onsuccess=()=>resolve(true);req.onerror=()=>reject(req.error);});}
-export async function deleteSeries(name){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction('series','readwrite');const req=tx.objectStore('series').delete(name);req.onsuccess=()=>resolve(true);req.onerror=()=>reject(req.error);});}
-export async function exportAllSermons(){const sermons=await loadSermons(1000);const series=await getAllSeries();return JSON.stringify({app:'HMG SermonScribe v2',exportedAt:new Date().toISOString(),sermons,series},null,2);}
-export async function importAllSermons(jsonString){const data=JSON.parse(jsonString);if(!data.sermons||!Array.isArray(data.sermons))throw new Error('Invalid backup file');for(const s of data.sermons){await saveSermon(s);}if(data.series){for(const s of data.series){await saveSeries(s.name,s);}}return data.sermons.length;}
-export async function saveFlashcard(card){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction('flashcards','readwrite');const req=tx.objectStore('flashcards').put({...card,updatedAt:new Date().toISOString()});req.onsuccess=()=>resolve(true);req.onerror=()=>reject(req.error);});}
-export async function loadFlashcards(){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction('flashcards','readonly');const results=[];const req=tx.objectStore('flashcards').openCursor(null,'prev');req.onsuccess=(e)=>{const cursor=e.target.result;if(!cursor){resolve(results);return;}results.push(cursor.value);cursor.continue();};req.onerror=()=>reject(req.error);});}
-export async function deleteFlashcard(id){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction('flashcards','readwrite');const req=tx.objectStore('flashcards').delete(id);req.onsuccess=()=>resolve(true);req.onerror=()=>reject(req.error);});}
+ HMG SermonScribe v3 — IndexedDB Persistence
+ Sermons, devotions, bulletins, prayers, series, cache, settings.
+ ============================================ */
+const DB_NAME = 'HMG_SermonScribe_v3';
+const DB_VERSION = 3;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onerror = () => reject(req.error);
+    req.onsuccess = () => resolve(req.result);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('sermons')) {
+        const s = db.createObjectStore('sermons', { keyPath: 'id' });
+        s.createIndex('byDate', 'updatedAt', { unique: false });
+        s.createIndex('byTitle', 'title', { unique: false });
+        s.createIndex('bySeries', 'series', { unique: false });
+        s.createIndex('byPreacher', 'preacher', { unique: false });
+      }
+      if (!db.objectStoreNames.contains('settings')) db.createObjectStore('settings', { keyPath: 'key' });
+      if (!db.objectStoreNames.contains('flashcards')) db.createObjectStore('flashcards', { keyPath: 'id' });
+      if (!db.objectStoreNames.contains('series')) db.createObjectStore('series', { keyPath: 'name' });
+      if (!db.objectStoreNames.contains('devotions')) {
+        const d = db.createObjectStore('devotions', { keyPath: 'id' });
+        d.createIndex('byDate', 'updatedAt', { unique: false });
+      }
+      if (!db.objectStoreNames.contains('prayers')) {
+        const p = db.createObjectStore('prayers', { keyPath: 'id' });
+        p.createIndex('byDate', 'updatedAt', { unique: false });
+      }
+      if (!db.objectStoreNames.contains('bulletins')) {
+        const b = db.createObjectStore('bulletins', { keyPath: 'id' });
+        b.createIndex('byDate', 'updatedAt', { unique: false });
+      }
+      if (!db.objectStoreNames.contains('verseCache')) db.createObjectStore('verseCache', { keyPath: 'ref' });
+      if (!db.objectStoreNames.contains('notes')) {
+        const n = db.createObjectStore('notes', { keyPath: 'id' });
+        n.createIndex('bySermonId', 'sermonId', { unique: false });
+      }
+    };
+  });
+}
+
+export async function saveSermon(sermon) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('sermons', 'readwrite');
+    const payload = { ...sermon, updatedAt: new Date().toISOString() };
+    const req = tx.objectStore('sermons').put(payload);
+    req.onsuccess = () => resolve(payload);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function getSermon(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('sermons', 'readonly');
+    const req = tx.objectStore('sermons').get(id);
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function loadSermons(limit = 200, series = null) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('sermons', 'readonly');
+    const store = tx.objectStore('sermons');
+    const results = [];
+    const req = series ? store.index('bySeries').openCursor(IDBKeyRange.only(series), 'prev') : store.index('byDate').openCursor(null, 'prev');
+    req.onsuccess = (e) => {
+      const cursor = e.target.result;
+      if (!cursor || results.length >= limit) { resolve(results); return; }
+      results.push(cursor.value); cursor.continue();
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function deleteSermon(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('sermons', 'readwrite');
+    const req = tx.objectStore('sermons').delete(id);
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function searchSermons(query) {
+  const all = await loadSermons(500);
+  const q = query.toLowerCase();
+  return all.filter(s =>
+    (s.title || '').toLowerCase().includes(q) ||
+    (s.content || '').toLowerCase().includes(q) ||
+    (s.tags || []).some(t => t.toLowerCase().includes(q)) ||
+    (s.series || '').toLowerCase().includes(q) ||
+    (s.preacher || '').toLowerCase().includes(q)
+  );
+}
+
+export async function saveSettings(key, value) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('settings', 'readwrite');
+    const req = tx.objectStore('settings').put({ key, value, updatedAt: new Date().toISOString() });
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function getSettings(key) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('settings', 'readonly');
+    const req = tx.objectStore('settings').get(key);
+    req.onsuccess = () => resolve(req.result?.value ?? null);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function getAllSeries() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('series', 'readonly');
+    const results = [];
+    const req = tx.objectStore('series').openCursor();
+    req.onsuccess = (e) => { const c = e.target.result; if (!c) { resolve(results); return; } results.push(c.value); c.continue(); };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function saveSeries(name, meta = {}) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('series', 'readwrite');
+    const req = tx.objectStore('series').put({ name, createdAt: new Date().toISOString(), ...meta });
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function deleteSeries(name) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('series', 'readwrite');
+    const req = tx.objectStore('series').delete(name);
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function exportAllSermons() {
+  const sermons = await loadSermons(1000);
+  const series = await getAllSeries();
+  const devotions = await loadDevotions(1000);
+  const prayers = await loadPrayers(1000);
+  const bulletins = await loadBulletins(1000);
+  return JSON.stringify({ app: 'HMG SermonScribe v3', exportedAt: new Date().toISOString(), sermons, series, devotions, prayers, bulletins }, null, 2);
+}
+
+export async function importAllSermons(jsonString) {
+  const data = JSON.parse(jsonString);
+  if (!data.sermons || !Array.isArray(data.sermons)) throw new Error('Invalid backup file');
+  for (const s of data.sermons) await saveSermon(s);
+  if (data.series) for (const s of data.series) await saveSeries(s.name, s);
+  if (data.devotions) for (const d of data.devotions) await saveDevotion(d);
+  if (data.prayers) for (const p of data.prayers) await savePrayer(p);
+  if (data.bulletins) for (const b of data.bulletins) await saveBulletin(b);
+  return data.sermons.length;
+}
+
+export async function saveFlashcard(card) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('flashcards', 'readwrite');
+    const req = tx.objectStore('flashcards').put({ ...card, updatedAt: new Date().toISOString() });
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function loadFlashcards() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('flashcards', 'readonly');
+    const results = [];
+    const req = tx.objectStore('flashcards').openCursor(null, 'prev');
+    req.onsuccess = (e) => { const c = e.target.result; if (!c) { resolve(results); return; } results.push(c.value); c.continue(); };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function deleteFlashcard(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('flashcards', 'readwrite');
+    const req = tx.objectStore('flashcards').delete(id);
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function saveDevotion(devotion) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('devotions', 'readwrite');
+    const req = tx.objectStore('devotions').put({ ...devotion, updatedAt: new Date().toISOString() });
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function loadDevotions(limit = 200) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('devotions', 'readonly');
+    const results = [];
+    const req = tx.objectStore('devotions').index('byDate').openCursor(null, 'prev');
+    req.onsuccess = (e) => { const c = e.target.result; if (!c || results.length >= limit) { resolve(results); return; } results.push(c.value); c.continue(); };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function deleteDevotion(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('devotions', 'readwrite');
+    const req = tx.objectStore('devotions').delete(id);
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function savePrayer(prayer) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('prayers', 'readwrite');
+    const req = tx.objectStore('prayers').put({ ...prayer, updatedAt: new Date().toISOString() });
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function loadPrayers(limit = 200) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('prayers', 'readonly');
+    const results = [];
+    const req = tx.objectStore('prayers').index('byDate').openCursor(null, 'prev');
+    req.onsuccess = (e) => { const c = e.target.result; if (!c || results.length >= limit) { resolve(results); return; } results.push(c.value); c.continue(); };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function deletePrayer(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('prayers', 'readwrite');
+    const req = tx.objectStore('prayers').delete(id);
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function saveBulletin(bulletin) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('bulletins', 'readwrite');
+    const req = tx.objectStore('bulletins').put({ ...bulletin, updatedAt: new Date().toISOString() });
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function loadBulletins(limit = 100) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('bulletins', 'readonly');
+    const results = [];
+    const req = tx.objectStore('bulletins').index('byDate').openCursor(null, 'prev');
+    req.onsuccess = (e) => { const c = e.target.result; if (!c || results.length >= limit) { resolve(results); return; } results.push(c.value); c.continue(); };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function deleteBulletin(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('bulletins', 'readwrite');
+    const req = tx.objectStore('bulletins').delete(id);
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function cacheVerse(ref, text, translation = 'kjv') {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('verseCache', 'readwrite');
+    const req = tx.objectStore('verseCache').put({ ref, text, translation, cachedAt: new Date().toISOString() });
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function getCachedVerse(ref, translation = 'kjv') {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('verseCache', 'readonly');
+    const req = tx.objectStore('verseCache').get(ref);
+    req.onsuccess = () => {
+      const r = req.result;
+      if (r && r.translation === translation) resolve(r.text); else resolve(null);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function saveNote(note) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('notes', 'readwrite');
+    const req = tx.objectStore('notes').put({ ...note, updatedAt: new Date().toISOString() });
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function loadNotesBySermon(sermonId) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('notes', 'readonly');
+    const results = [];
+    const req = tx.objectStore('notes').index('bySermonId').openCursor(IDBKeyRange.only(sermonId), 'prev');
+    req.onsuccess = (e) => { const c = e.target.result; if (!c) { resolve(results); return; } results.push(c.value); c.continue(); };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function deleteNote(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('notes', 'readwrite');
+    const req = tx.objectStore('notes').delete(id);
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
