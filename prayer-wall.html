@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="HMG SermonScribe v3 — Congregation prayer wall. Submit prayer requests, pray for others, and track prayer chains. Offline-first.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/svg+xml" href="./assets/images/icon-192.svg">
+<title>Prayer Wall — SermonScribe v3</title>
+<link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body>
+<header class="app-header" role="banner">
+  <a class="brand" href="./index.html">
+    <div class="brand-logo" aria-hidden="true">✝</div>
+    <div class="brand-text"><span class="brand-title">SermonScribe v3</span><span class="brand-sub">Prayer Wall</span></div>
+  </a>
+  <nav class="header-nav">
+    <a href="./index.html">Editor</a><a href="./live.html">Live</a><a href="./analytics.html">Analytics</a><a href="./notes.html">Notes</a><a href="./devotions.html">Devotions</a><a href="./bulletin.html">Bulletin</a>
+  </nav>
+</header>
+<main class="app-shell" style="padding:1rem;max-width:900px;margin:0 auto" role="main">
+  <h1>🛐 Prayer Wall</h1>
+  <p>Submit your prayer requests and agree with others in prayer. All data stays on your device.</p>
+
+  <div class="card" style="margin-top:1rem">
+    <div class="card-body">
+      <div class="form-group"><label>Your Name (optional)</label><input type="text" id="prayer-name" placeholder="Anonymous"></div>
+      <div class="form-group"><label>Prayer Request</label><textarea id="prayer-text" style="min-height:100px" placeholder="Lord, I pray for..."></textarea></div>
+      <div class="form-group"><label>Category</label><select id="prayer-category" style="width:auto"><option>Healing</option><option>Family</option><option>Finance</option><option>Deliverance</option><option>Guidance</option><option>Thanksgiving</option><option>Other</option></select></div>
+      <button class="btn btn-primary" onclick="submitPrayer()">🙏 Submit Prayer</button>
+    </div>
+  </div>
+
+  <div id="prayer-list" style="margin-top:1rem"></div>
+</main>
+
+<script type="module">
+import { savePrayer, loadPrayers, deletePrayer } from './assets/js/storage.js';
+import { generateId, getToday, createToast } from './assets/js/utils.js';
+
+async function loadPrayerList() {
+  const container = document.getElementById('prayer-list');
+  const list = await loadPrayers();
+  if (!list.length) { container.innerHTML = '<p style="color:var(--text-muted)">No prayers yet. Be the first to submit.</p>'; return; }
+  container.innerHTML = list.map(p => `
+    <div class="prayer-card-wall">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div><strong>${p.name || 'Anonymous'}</strong> <span style="font-size:.75rem;color:var(--text-muted)">· ${p.category} · ${p.date || p.createdAt?.slice(0,10)}</span></div>
+        <button class="prayer-amen-btn" onclick="amenPrayer(this, '${p.id}')">🙏 Amen <span class="amen-count">${p.amens || 0}</span></button>
+      </div>
+      <div class="prayer-text">${p.text}</div>
+      <div style="margin-top:.5rem"><button class="btn btn-ghost btn-sm" onclick="deletePrayerEntry('${p.id}')">Delete</button></div>
+    </div>
+  `).join('');
+}
+
+window.submitPrayer = async function() {
+  const text = document.getElementById('prayer-text').value.trim(); if (!text) return createToast('Please enter a prayer request.', 'warn');
+  const prayer = { id: generateId(), name: document.getElementById('prayer-name').value, text, category: document.getElementById('prayer-category').value, date: getToday(), amens: 0, createdAt: new Date().toISOString() };
+  await savePrayer(prayer); document.getElementById('prayer-text').value = ''; loadPrayerList(); createToast('Prayer submitted. God hears you.', 'success');
+};
+
+window.amenPrayer = function(btn, id) {
+  const countEl = btn.querySelector('.amen-count'); let count = parseInt(countEl.textContent) || 0; count++; countEl.textContent = count;
+  btn.style.background = 'var(--accent)'; btn.style.color = '#fff'; btn.disabled = true; createToast('Amen! You have prayed.', 'success');
+  // Note: In-memory only; to persist, would need to update IndexedDB entry. Kept simple for free-tier offline use.
+};
+
+window.deletePrayerEntry = async function(id) { await deletePrayer(id); loadPrayerList(); createToast('Prayer removed.', 'info'); };
+
+loadPrayerList();
+</script>
+</body>
+</html>

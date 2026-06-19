@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="HMG SermonScribe v3 — Digital bulletin builder for churches. Create, save, and share church programs. Offline-first.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/svg+xml" href="./assets/images/icon-192.svg">
+<title>Digital Bulletin — SermonScribe v3</title>
+<link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body>
+<header class="app-header" role="banner">
+  <a class="brand" href="./index.html">
+    <div class="brand-logo" aria-hidden="true">✝</div>
+    <div class="brand-text"><span class="brand-title">SermonScribe v3</span><span class="brand-sub">Bulletin</span></div>
+  </a>
+  <nav class="header-nav">
+    <a href="./index.html">Editor</a><a href="./live.html">Live</a><a href="./analytics.html">Analytics</a><a href="./notes.html">Notes</a><a href="./devotions.html">Devotions</a><a href="./prayer-wall.html">Prayer Wall</a>
+  </nav>
+</header>
+<main class="app-shell" style="padding:1rem;max-width:900px;margin:0 auto" role="main">
+  <h1>📰 Digital Bulletin Builder</h1>
+  <p>Create your church program digitally. Save for offline use, print for ushers, or share via QR.</p>
+
+  <div class="card" style="margin-top:1rem">
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div class="form-group"><label>Church Name</label><input type="text" id="bul-church" placeholder="e.g. HMG Gospel Church"></div>
+        <div class="form-group"><label>Date</label><input type="date" id="bul-date"></div>
+      </div>
+      <div class="form-group"><label>Theme / Title</label><input type="text" id="bul-title" placeholder="e.g. Sunday of Breakthrough"></div>
+      <div class="form-group"><label>Order of Service</label><textarea id="bul-order" style="min-height:160px" placeholder="1. Opening Prayer
+2. Praise & Worship
+3. Scripture Reading
+4. Choir Ministration
+5. Sermon
+6. Offering
+7. Announcements
+8. Benediction"></textarea></div>
+      <div class="form-group"><label>Announcements</label><textarea id="bul-announcements" style="min-height:100px" placeholder="Enter announcements..."></textarea></div>
+      <div class="form-group"><label>Prayer Points</label><textarea id="bul-prayers" style="min-height:100px" placeholder="Enter prayer points..."></textarea></div>
+      <div style="display:flex;gap:.5rem;margin-top:1rem">
+        <button class="btn btn-primary" onclick="saveBulletin()">💾 Save Bulletin</button>
+        <button class="btn btn-ghost" onclick="printBulletin()">🖨️ Print</button>
+        <button class="btn btn-ghost" onclick="showSavedBulletins()">📚 Saved</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="bulletin-preview" style="margin-top:1rem"></div>
+  <div id="saved-bulletins" style="margin-top:1rem"></div>
+</main>
+
+<script type="module">
+import { saveBulletin as saveBul, loadBulletins, deleteBulletin } from './assets/js/storage.js';
+import { generateId, getToday, createToast, downloadBlob } from './assets/js/utils.js';
+
+document.getElementById('bul-date').value = new Date().toISOString().split('T')[0];
+
+window.saveBulletin = async function() {
+  const b = { id: generateId(), church: document.getElementById('bul-church').value, date: document.getElementById('bul-date').value, title: document.getElementById('bul-title').value, order: document.getElementById('bul-order').value, announcements: document.getElementById('bul-announcements').value, prayers: document.getElementById('bul-prayers').value, createdAt: new Date().toISOString() };
+  await saveBul(b); createToast('Bulletin saved!', 'success'); renderPreview(b); showSavedBulletins();
+};
+
+function renderPreview(b) {
+  const el = document.getElementById('bulletin-preview');
+  el.innerHTML = `<div class="bulletin-page" style="border:1px solid var(--border);border-radius:12px;padding:1.5rem;background:var(--surface);margin-top:1rem">
+    <h2 style="text-align:center;font-size:1.5rem;margin-bottom:.25rem">${b.church || 'Church Name'}</h2>
+    <p style="text-align:center;color:var(--text-muted);margin-bottom:1.5rem">${b.date} · ${b.title || 'Sunday Service'}</p>
+    <h3 style="border-bottom:1px solid var(--border);padding-bottom:.25rem;margin-bottom:.5rem">Order of Service</h3>
+    <div style="white-space:pre-wrap;line-height:1.8;margin-bottom:1rem">${b.order}</div>
+    <h3 style="border-bottom:1px solid var(--border);padding-bottom:.25rem;margin-bottom:.5rem">Announcements</h3>
+    <div style="white-space:pre-wrap;line-height:1.8;margin-bottom:1rem">${b.announcements}</div>
+    <h3 style="border-bottom:1px solid var(--border);padding-bottom:.25rem;margin-bottom:.5rem">Prayer Points</h3>
+    <div style="white-space:pre-wrap;line-height:1.8">${b.prayers}</div>
+  </div>`;
+}
+
+window.showSavedBulletins = async function() {
+  const container = document.getElementById('saved-bulletins');
+  const list = await loadBulletins();
+  if (!list.length) { container.innerHTML = '<p style="margin-top:1rem">No saved bulletins.</p>'; return; }
+  container.innerHTML = '<h2>Saved Bulletins</h2>' + list.map(b => `<div class="card" style="margin-top:.5rem"><div class="card-body"><strong>${b.title || 'Bulletin'}</strong> <span style="color:var(--text-muted)">${b.date}</span><div style="margin-top:.5rem"><button class="btn btn-ghost btn-sm" onclick="previewBulletin('${b.id}')">Preview</button><button class="btn btn-ghost btn-sm" onclick="deleteBulletinEntry('${b.id}')">Delete</button></div></div></div>`).join('');
+};
+
+window.previewBulletin = async function(id) {
+  const list = await loadBulletins(); const b = list.find(x => x.id === id); if (b) renderPreview(b);
+};
+
+window.deleteBulletinEntry = async function(id) { await deleteBulletin(id); showSavedBulletins(); createToast('Deleted.', 'info'); };
+window.printBulletin = function() { window.print(); };
+</script>
+</body>
+</html>

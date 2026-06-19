@@ -1,49 +1,63 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="HMG SermonScribe v2 — Live Congregation Caption Display. Project sermon captions onto screens or share with congregation in real time.">
-<meta name="theme-color" content="#0f172a">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/svg+xml" href="assets/images/icon-192.svg">
-<title>Live Captions — HMG SermonScribe v2</title>
-<link rel="stylesheet" href="assets/css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="description" content="HMG SermonScribe v3 — Live congregation caption display. Real-time sermon captions for projectors and mobile devices.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/svg+xml" href="./assets/images/icon-192.svg">
+<title>Live Captions — SermonScribe v3</title>
 <style>
-body,html{margin:0;padding:0;height:100%;background:#0f172a;color:#f1f5f9;overflow:hidden;}
-.live-container{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem;text-align:center;}
-.live-caption{font-size:clamp(2rem,6vw,5rem);line-height:1.4;font-weight:600;max-width:1200px;transition:opacity .3s;min-height:2em;}
-.live-meta{position:fixed;bottom:1rem;left:1rem;right:1rem;display:flex;justify-content:space-between;align-items:center;font-size:.85rem;opacity:.6;}
-.live-indicator{display:flex;align-items:center;gap:.5rem;}
-.live-dot{width:10px;height:10px;border-radius:50%;background:#dc2626;animation:pulse-record 1.5s infinite;}
-.qr-zone{position:fixed;top:1rem;right:1rem;background:rgba(255,255,255,0.08);padding:.5rem;border-radius:8px;}
-.qr-zone img{width:80px;height:80px;border-radius:4px;}
-#status{font-size:.9rem;opacity:.7;margin-top:1rem;}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:#000;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow:hidden}
+.live-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;text-align:center}
+.live-caption{font-size:clamp(2rem,6vw,5rem);line-height:1.4;max-width:90vw;word-break:break-word;font-weight:600}
+.live-meta{position:fixed;bottom:1rem;right:1rem;font-size:.9rem;opacity:.5}
+.header-bar{position:fixed;top:0;left:0;right:0;padding:.5rem 1rem;display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:10}
+.brand-sm{font-weight:700;color:var(--accent,#d97706);font-size:.9rem}
+#qr-btn{background:transparent;border:1px solid rgba(255,255,255,0.2);color:#fff;padding:.4rem .8rem;border-radius:8px;cursor:pointer;font-size:.85rem}
+#qr-btn:hover{background:rgba(255,255,255,0.1)}
+.qr-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;z-index:50}
+.qr-overlay.open{display:flex}
+.qr-box{background:#fff;color:#000;padding:1.5rem;border-radius:16px;text-align:center;max-width:90vw}
+.qr-box img{max-width:256px;border-radius:8px}
 </style>
 </head>
 <body>
-<div class="live-container">
-  <div id="live-caption" class="live-caption">Waiting for live transcript...</div>
-  <div id="status">Open this page on a projector or share the URL with the congregation.</div>
+<div class="header-bar">
+  <div class="brand-sm">SermonScribe v3 — Live Captions</div>
+  <button id="qr-btn" onclick="toggleQR()">📡 QR Code</button>
 </div>
-<div class="live-meta">
-  <div class="live-indicator"><div class="live-dot"></div><span>LIVE</span></div>
-  <div>HMG SermonScribe v2 — <span id="session-id"></span></div>
+<div class="live-stage">
+  <div class="live-caption" id="live-caption" aria-live="assertive">Waiting for live transcript...</div>
+  <div class="live-meta" id="live-meta">Not connected</div>
 </div>
+<div class="qr-overlay" id="qr-overlay" onclick="toggleQR()">
+  <div class="qr-box" onclick="event.stopPropagation()">
+    <h2 style="margin:0 0 .5rem">Join Live Captions</h2>
+    <p style="color:#555;margin:0 0 1rem;font-size:.9rem">Scan this QR code to open captions on your phone.</p>
+    <div id="qr-target"></div>
+    <p style="margin-top:.75rem;font-size:.8rem;color:#555">Or share this URL directly.</p>
+  </div>
+</div>
+<script type="module">
+import { initLivePage } from './assets/js/broadcast.js';
+initLivePage();
 
-<script>
-(function(){
-  const params=new URLSearchParams(window.location.search);
-  const session=params.get('session')||'default';
-  document.getElementById('session-id').textContent=session.slice(0,12)+'...';
-  const captionEl=document.getElementById('live-caption');
-  const statusEl=document.getElementById('status');
-  function updateFromStorage(){try{const payload=JSON.parse(localStorage.getItem('hmg-live-'+session)||'null');if(payload&&payload.text){captionEl.textContent=payload.text.slice(-200);statusEl.textContent='Updated '+new Date(payload.timestamp).toLocaleTimeString();}else{captionEl.textContent='Waiting for live transcript...';}}catch(_){}}
-  updateFromStorage();
-  window.addEventListener('storage',(e)=>{if(e.key==='hmg-live-'+session){updateFromStorage();}});
-  if(typeof BroadcastChannel!=='undefined'){const bc=new BroadcastChannel('hmg-sermonscribe-live');bc.onmessage=(e)=>{if(e.data?.session===session&&e.data?.text){captionEl.textContent=e.data.text.slice(-200);statusEl.textContent='Updated live via BroadcastChannel';}};}
-  setInterval(updateFromStorage,3000);
-})();
+const url = window.location.href;
+const qrTarget = document.getElementById('qr-target');
+function toggleQR() { document.getElementById('qr-overlay').classList.toggle('open'); }
+window.toggleQR = toggleQR;
+
+if (typeof QRCode !== 'undefined') {
+  QRCode.toDataURL(url, { width: 256, margin: 2, color: { dark: '#0f172a', light: '#ffffff' } }, (err, dataUrl) => {
+    if (!err) qrTarget.innerHTML = `<img src="${dataUrl}" alt="QR code for live captions">`;
+  });
+} else {
+  qrTarget.textContent = url;
+}
 </script>
 </body>
 </html>

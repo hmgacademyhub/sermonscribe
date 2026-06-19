@@ -1,164 +1,153 @@
-# Deployment Guide — HMG SermonScribe v2
+# HMG SermonScribe v3 — Deployment Guide
 
-> **Zero-cost deployment to modern static hosts.**  
-> This guide covers every step for GitHub Pages, Cloudflare Pages, Vercel, Netlify, and traditional web hosting.
-
----
-
-## ⚠️ Pre-Deployment Requirements
-
-1. **HTTPS is mandatory.** The Web Speech API only works on `localhost` or `https://` origins. All platforms listed below provide HTTPS automatically.
-2. **Microphone permission.** The first time a user opens the app, the browser will ask for microphone access. Churches should instruct members to tap **Allow**.
-3. **Browser support.** Recommend **Chrome**, **Edge**, **Safari**, or **Samsung Internet** for the best speech recognition accuracy.
+Deploy HMG SermonScribe v3 to any static hosting platform. No server, no database, no API keys required.
 
 ---
 
-## 📂 Step 1: Prepare Your Files
+## 1. GitHub Pages (Recommended)
 
-Ensure your `sermon v2` folder contains exactly these items:
-
-```
-sermon v2/
-├── index.html
-├── live.html
-├── analytics.html
-├── about.html
-├── features.html
-├── deploy.html
-├── manifest.json
-├── sw.js
-├── README.md
-├── DEPLOYMENT.md
-├── FEATURES.md
-├── .github/
-│   └── workflows/
-│       └── deploy.yml
-├── assets/
-│   ├── css/style.css
-│   ├── js/
-│   │   ├── app.js
-│   │   ├── bible.js
-│   │   ├── export.js
-│   │   ├── storage.js
-│   │   ├── utils.js
-│   │   ├── broadcast.js
-│   │   ├── outline-generator.js
-│   │   ├── discussion-generator.js
-│   │   ├── prayer-extractor.js
-│   │   ├── filler-remover.js
-│   │   ├── flashcards.js
-│   │   ├── social-clip.js
-│   │   ├── analytics.js
-│   │   ├── church-branding.js
-│   │   ├── audio-upload.js
-│   │   ├── reading-plan.js
-│   │   └── verse-autocomplete.js
-│   └── images/
-│       ├── icon-192.svg
-│       └── icon-512.svg
-```
-
-If you deploy to a subfolder, update `manifest.json` `start_url` / `scope`, `sw.js` cache paths, and HTML canonical tags.
+1. Fork or upload the `sermonscribe` folder to a GitHub repository.
+2. Go to **Settings → Pages**.
+3. Under **Build and deployment**, select **Deploy from a branch**.
+4. Choose the `main` or `master` branch and `/ (root)` folder.
+5. Click **Save**. Your site will be live at `https://yourusername.github.io/sermonscribe/`.
+6. **Important:** If your repo is named `sermonscribe`, the site will be served from `/sermonscribe/`. All internal links in v3 use relative paths (`./`) so this works automatically.
+7. For a custom domain, add a `CNAME` file in the root with your domain name (e.g., `sermon.yourchurch.com`).
+8. Ensure **Enforce HTTPS** is checked in the Pages settings.
 
 ---
 
-## 🚀 Platform 1: GitHub Pages (Recommended)
+## 2. Cloudflare Pages
 
-### 1.1 Create Repository
-1. Go to [github.com/new](https://github.com/new).
-2. Name it `hmg-sermonscribe-v2` (or any name). Choose **Public**.
-3. Do NOT initialise with README if you already have files locally.
-
-### 1.2 Push Your Code
-Open your terminal in the folder that contains the `sermon v2` directory:
-
-```bash
-git init
-git add "sermon v2/"
-git commit -m "Initial commit: HMG SermonScribe v2.0"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/hmg-sermonscribe-v2.git
-git push -u origin main
-```
-
-Replace `YOUR_USERNAME` with your actual GitHub username.
-
-### 1.3 Enable Pages
-1. On your repo page, click **Settings → Pages**.
-2. Under **Build and deployment**: Source: **Deploy from a branch** → Branch: `main` / `/(root)` → **Save**.
-3. Wait 1–2 minutes. Your live URL: `https://yourusername.github.io/hmg-sermonscribe-v2/`
-
-### 1.4 (Optional) GitHub Actions
-The file `.github/workflows/deploy.yml` is included. In Pages settings, set **Source: GitHub Actions** for automatic redeploy on every push.
+1. Log in to [Cloudflare Dashboard](https://dash.cloudflare.com).
+2. Navigate to **Pages → Create a project**.
+3. Connect your GitHub repository containing the `sermonscribe` folder.
+4. Set **Build command** to `exit 0` (static site, no build needed).
+5. Set **Build output directory** to `sermonscribe` (if the folder is inside a repo) or `.` (if repo root is the app).
+6. Deploy. Cloudflare will provide a `*.pages.dev` URL.
+7. Enable **Always Use HTTPS** and set custom headers if desired.
+8. Add a custom domain in **Custom domains** tab.
 
 ---
 
-## 🌐 Platform 2: Cloudflare Pages (Best for Speed & Africa)
+## 3. Vercel
 
-1. Sign up at [dash.cloudflare.com](https://dash.cloudflare.com).
-2. Go to **Pages → Create a project** → Connect your GitHub repo.
-3. Select branch `main`.
-4. Build command: *(leave blank)*. Build output directory: `sermon v2` (if repo root is parent) or `/` (if repo root IS the app).
-5. Click **Save and Deploy**.
-
----
-
-## ▲ Platform 3: Vercel
-
-1. Go to [vercel.com/new](https://vercel.com/new).
-2. Import `hmg-sermonscribe-v2` from GitHub.
-3. Set **Root Directory** to `sermon v2` if applicable.
-4. Click **Deploy**. Live in ~30 seconds.
+1. Go to [Vercel](https://vercel.com) and import your GitHub repository.
+2. During import, set **Root Directory** to `sermonscribe` if the app is in a subfolder.
+3. Set **Framework Preset** to `Other` (static site).
+4. Deploy. Vercel provides a `*.vercel.app` URL.
+5. Add a custom domain in **Project Settings → Domains**.
+6. Ensure **HTTPS** is enforced by default.
 
 ---
 
-## ◆ Platform 4: Netlify
+## 4. Netlify
 
-1. Zip the `sermon v2` folder.
-2. Go to [app.netlify.com/drop](https://app.netlify.com/drop).
-3. Drag the ZIP onto the page. Netlify deploys instantly.
+1. Go to [Netlify](https://app.netlify.com) → **Add new site** → **Import from Git**.
+2. Select your repository. Set **Base directory** to `sermonscribe` if needed.
+3. Leave build command blank and set **Publish directory** to `.` or `sermonscribe`.
+4. Deploy. Netlify provides a `*.netlify.app` URL.
+5. Enable **Asset optimization** and **HTTPS** by default.
+6. Add a custom domain in **Domain settings**.
 
 ---
 
-## 📁 Platform 5: cPanel / Shared Hosting
+## 5. cPanel / Shared Hosting
 
-1. Log in to cPanel → **File Manager** → `public_html`.
-2. Upload the **contents** of the `sermon v2` folder into the desired subfolder.
-3. Add `.htaccess` to force HTTPS if your host does not:
+1. Zip the `sermonscribe` folder locally.
+2. Log in to your cPanel → **File Manager** → `public_html`.
+3. Upload the zip file and extract it.
+4. If you want the app at a subdomain (e.g., `sermon.yourchurch.com`), create a subdomain in cPanel and upload contents to its folder.
+5. Ensure the `.htaccess` file (if present) does not block service worker or manifest JSON MIME types.
+6. Add the following to `.htaccess` if needed for MIME types:
 
 ```apache
-RewriteEngine On
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+AddType application/json .json
+AddType text/cache-manifest .manifest
+AddType application/manifest+json .webmanifest
 ```
 
----
-
-## 🔄 Updating the App After Deployment
-
-When you release a new version:
-
-1. Increment the `CACHE_NAME` in `sw.js` (e.g., `hmg-sermonscribe-v2` → `hmg-sermonscribe-v3`).
-2. Commit and push to GitHub. GitHub Pages / Cloudflare / Vercel / Netlify will rebuild automatically.
-3. Tell users to **refresh the page twice** to force the Service Worker update.
+7. Ensure your SSL certificate is active (HTTPS required for Web Speech API, MediaRecorder, and Service Worker).
 
 ---
 
-## 🧪 Post-Deployment Testing Checklist
+## 🔒 HTTPS Requirement
 
-- [ ] Open live URL in Chrome/Edge on Android or desktop.
-- [ ] Tap **Allow** for microphone permission.
-- [ ] Tap **Start Recording** and speak. Text appears within 2 seconds.
-- [ ] Tap **🔖 Add Bookmark** and confirm timestamp appears.
-- [ ] Tap **Stop** and confirm text stays in the editor.
-- [ ] Refresh the page and confirm sermon is still in sidebar (IndexedDB works).
-- [ ] Click **Export → Print** and verify branded, clean preview.
-- [ ] Click browser menu → **Add to Home Screen**. PWA installs with HMG S icon.
-- [ ] Turn off Wi-Fi / mobile data and reload. App interface should still appear.
-- [ ] Visit **live.html** and confirm black screen for projector captions.
-- [ ] Visit **analytics.html** and confirm dashboard loads.
-- [ ] Test **Find & Replace** modal and **Filler Removal** button.
+**Web Speech API, MediaRecorder, and Service Worker** require a secure context (HTTPS or localhost). Ensure your hosting platform serves the site over HTTPS. All modern static hosts enforce this by default.
 
 ---
 
-*Built with zero server cost for the Nigerian church and beyond.*
+## 🔄 Post-Deployment Checklist
+
+- [ ] Open the site in Chrome/Edge and verify the **Install** prompt appears (PWA).
+- [ ] Test microphone permissions on **index.html**.
+- [ ] Verify **live.html** opens captions correctly.
+- [ ] Check **analytics.html** loads sermon data from IndexedDB.
+- [ ] Test **offline mode** by disabling network in DevTools → Network → Offline.
+- [ ] Confirm all pages appear in **Google Search Console** via `sitemap.xml`.
+- [ ] Update `sitemap.xml` and `robots.txt` with your actual domain name.
+- [ ] Verify **Open Graph** and **Twitter Cards** by sharing the URL on social media.
+- [ ] Test **high contrast mode** and **font size slider** for accessibility.
+- [ ] Test **keyboard shortcuts**: Ctrl+S (save), Ctrl+Space (record), Ctrl+N (new sermon), Ctrl+P (present), Ctrl+F (find), Ctrl+B (bookmark), Ctrl+K (timer).
+- [ ] Verify **export** of TXT, MD, HTML, DOC, SRT, Devotional, RSS, and JSON.
+- [ ] Test **WhatsApp share** and **Native Web Share** on mobile.
+- [ ] Confirm **QR codes** generate correctly for sermon sharing and live captions.
+- [ ] Test **dark mode** toggle and system preference sync.
+- [ ] Check **Analytics dashboard** after creating at least 2 sermons.
+
+---
+
+## 🛠️ Optional: GitHub Actions Auto-Deploy
+
+Create `.github/workflows/deploy.yml`:
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './sermonscribe'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+This workflow automatically deploys the `sermonscribe` folder to GitHub Pages on every push to `main`.
+
+---
+
+## 🌐 SEO & Discoverability
+
+After deployment:
+
+1. Submit your `sitemap.xml` to [Google Search Console](https://search.google.com/search-console).
+2. Submit your site to [Bing Webmaster Tools](https://www.bing.com/webmasters).
+3. Share your URL on social media to trigger Open Graph previews.
+4. Add your site to church directories and ministry listings.
+5. Encourage congregation members to install the PWA for recurring visits.
+
+---
+
+© 2026 HMG Concepts. All rights reserved.

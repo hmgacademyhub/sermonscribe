@@ -1,63 +1,71 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="HMG SermonScribe v2 — Sermon Analytics Dashboard. Track themes, scripture coverage, word frequency, and church intelligence.">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="HMG SermonScribe v3 — Church analytics dashboard. Sermon statistics, theme clouds, scripture rankings, and preaching insights.">
+<meta name="robots" content="index, follow">
 <meta name="theme-color" content="#0f172a">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/svg+xml" href="assets/images/icon-192.svg">
-<title>Analytics — HMG SermonScribe v2</title>
-<link rel="stylesheet" href="assets/css/style.css">
-<style>
-.page-wrap{max-width:1100px;margin:0 auto;padding:2rem 1rem;}
-.hero{text-align:center;padding:3rem 1rem;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);color:#f8fafc;border-radius:var(--radius);margin-bottom:2rem;}
-.hero h1{margin:0 0 .5rem;font-size:2rem;}
-.hero p{margin:0;opacity:.85;max-width:600px;margin-left:auto;margin-right:auto;}
-.section{margin-bottom:2.5rem;}
-.section h2{font-size:1.3rem;color:var(--primary);margin-bottom:.75rem;border-bottom:2px solid var(--accent-light);padding-bottom:.3rem;display:inline-block;}
-</style>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/svg+xml" href="./assets/images/icon-192.svg">
+<title>Analytics Dashboard — SermonScribe v3</title>
+<link rel="stylesheet" href="./assets/css/style.css">
 </head>
 <body>
-<header class="app-header">
-  <a href="index.html" class="brand" aria-label="HMG SermonScribe v2 Home"><div class="brand-logo" aria-hidden="true">S</div><div class="brand-text"><span class="brand-title">SermonScribe v2</span><span class="brand-sub">HMG Gospel · FaithTech</span></div></a>
-  <nav class="header-nav" aria-label="Primary"><a href="index.html"><span>📝</span><span>Transcribe</span></a><a href="live.html" target="_blank"><span>📡</span><span>Live</span></a><a href="analytics.html"><span>📊</span><span>Analytics</span></a><a href="about.html"><span>ℹ️</span><span>About</span></a><a href="features.html"><span>✨</span><span>Features</span></a></nav>
+<header class="app-header" role="banner">
+  <a class="brand" href="./index.html">
+    <div class="brand-logo" aria-hidden="true">✝</div>
+    <div class="brand-text"><span class="brand-title">SermonScribe v3</span><span class="brand-sub">Analytics</span></div>
+  </a>
+  <nav class="header-nav">
+    <a href="./index.html">Editor</a><a href="./live.html">Live</a><a href="./notes.html">Notes</a><a href="./devotions.html">Devotions</a><a href="./bulletin.html">Bulletin</a><a href="./prayer-wall.html">Prayer Wall</a>
+  </nav>
 </header>
-<div class="page-wrap">
-  <div class="hero"><h1>Sermon Analytics Dashboard</h1><p>Understand your preaching patterns, scripture coverage, and spiritual themes across every sermon in your library.</p></div>
-  <div id="analytics-loading" class="text-muted text-center">Loading analytics from your local sermon library...</div>
-  <div id="analytics-content" style="display:none;">
-    <div class="analytics-grid mb-3">
-      <div class="analytic-card"><h3>Total Sermons</h3><p class="big-number" id="total-sermons">0</p><p class="subtext">In your library</p></div>
-      <div class="analytic-card"><h3>Total Words</h3><p class="big-number" id="total-words">0</p><p class="subtext">Across all sermons</p></div>
-      <div class="analytic-card"><h3>Avg Sermon Length</h3><p class="big-number" id="avg-words">0</p><p class="subtext">Words per sermon</p></div>
-      <div class="analytic-card"><h3>Unique Themes</h3><p class="big-number" id="unique-themes">0</p><p class="subtext">Detected themes</p></div>
-      <div class="analytic-card"><h3>Scripture References</h3><p class="big-number" id="total-verses">0</p><p class="subtext">Bible verses quoted</p></div>
-      <div class="analytic-card"><h3>Total Duration</h3><p class="big-number" id="total-duration">0:00</p><p class="subtext">Combined recording time</p></div>
+<main class="app-shell" style="padding:1rem" role="main">
+  <div style="flex:1">
+    <h1 style="margin:0 0 1rem">📊 Church Analytics</h1>
+    <div class="stat-grid" style="margin-bottom:1rem">
+      <div class="stat-card"><div class="stat-value" id="stat-sermon-count">0</div><div class="stat-label">Sermons</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-total-words">0</div><div class="stat-label">Total Words</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-total-hours">0</div><div class="stat-label">Hours Recorded</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-series-count">0</div><div class="stat-label">Series</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-flashcards">0</div><div class="stat-label">Flashcards</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-devotions">0</div><div class="stat-label">Devotions</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-prayers">0</div><div class="stat-label">Prayers</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-bulletins">0</div><div class="stat-label">Bulletins</div></div>
     </div>
-    <div class="section">
-      <h2>Top Themes (Word Cloud)</h2>
-      <div class="word-cloud-display" id="theme-cloud"></div>
+
+    <div class="card" style="margin-bottom:1rem">
+      <div class="card-header">☁️ Theme Word Cloud</div>
+      <div class="card-body"><canvas id="word-cloud" class="word-cloud-canvas"></canvas></div>
     </div>
-    <div class="section">
-      <h2>Most Quoted Scriptures</h2>
-      <div id="verse-ranking"></div>
+
+    <div class="card" style="margin-bottom:1rem">
+      <div class="card-header">🎤 Preacher Distribution</div>
+      <div class="card-body"><canvas id="preacher-chart" style="width:100%;height:260px"></canvas></div>
     </div>
-    <div class="section">
-      <h2>Sermon Series Breakdown</h2>
-      <div id="series-breakdown"></div>
+
+    <div class="card" style="margin-bottom:1rem">
+      <div class="card-header">📖 Scripture Rankings</div>
+      <div class="card-body"><canvas id="verse-chart" style="width:100%;height:260px"></canvas></div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem">
+      <div class="card-header">📅 Sermon Timeline</div>
+      <div class="card-body"><canvas id="timeline-chart" style="width:100%;height:260px"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">📋 Sermon Details</div>
+      <div class="card-body" style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:.9rem">
+          <thead><tr style="border-bottom:2px solid var(--border)"><th style="text-align:left;padding:.5rem">Title</th><th style="text-align:left;padding:.5rem">Preacher</th><th style="text-align:left;padding:.5rem">Date</th><th style="text-align:left;padding:.5rem">Words</th><th style="text-align:left;padding:.5rem">Grade</th><th style="text-align:left;padding:.5rem">Duration</th></tr></thead>
+          <tbody id="sermon-table"></tbody>
+        </table>
+      </div>
     </div>
   </div>
-</div>
-<footer style="background:var(--primary);color:var(--text-inverse);padding:2rem 1rem;text-align:center;font-size:.85rem;margin-top:auto;">
-  <div style="max-width:900px;margin:0 auto;"><div style="font-weight:700;font-size:1.1rem;margin-bottom:.5rem;">His Marvellous Grace — HMG Concepts</div><div style="opacity:.6;font-size:.75rem;">© 2015 — 2026 HMG Concepts. All rights reserved.</div></div>
-</footer>
-<script type="module">
-import{getKeywords,stripHtml,wordCount}from'./assets/js/utils.js';
-import{detectReferences}from'./assets/js/bible.js';
-import{loadSermons}from'./assets/js/storage.js';
-async function init(){const sermons=await loadSermons(1000);if(!sermons.length){document.getElementById('analytics-loading').textContent='No sermons found. Record or transcribe sermons to see analytics.';return;}document.getElementById('analytics-loading').style.display='none';document.getElementById('analytics-content').style.display='block';const totalWords=sermons.reduce((sum,s)=>sum+wordCount(stripHtml(s.content||'')),0);document.getElementById('total-sermons').textContent=sermons.length;document.getElementById('total-words').textContent=totalWords.toLocaleString();document.getElementById('avg-words').textContent=Math.round(totalWords/sermons.length).toLocaleString();const allThemes={};const allVerses={};const seriesCounts={};for(const s of sermons){const themes=getKeywords(stripHtml(s.content||''));themes.forEach(t=>allThemes[t]=(allThemes[t]||0)+1);const verses=detectReferences(stripHtml(s.content||''));verses.forEach(v=>allVerses[v.ref]=(allVerses[v.ref]||0)+1);if(s.series)seriesCounts[s.series]=(seriesCounts[s.series]||0)+1;}const sortedThemes=Object.entries(allThemes).sort((a,b)=>b[1]-a[1]);document.getElementById('unique-themes').textContent=sortedThemes.length;document.getElementById('theme-cloud').innerHTML=sortedThemes.slice(0,20).map(([t,c])=>`<span style="font-size:${Math.max(.8,Math.min(1.4,c*0.1+.8))}rem;">${t}</span>`).join('');const sortedVerses=Object.entries(allVerses).sort((a,b)=>b[1]-a[1]);document.getElementById('total-verses').textContent=sortedVerses.length;document.getElementById('verse-ranking').innerHTML=sortedVerses.slice(0,10).map(([v,c],i)=>`<div class="timeline-item"><div class="time">#${i+1}</div><div class="content"><strong>${v}</strong> — quoted ${c} time${c>1?'s':''}</div></div>`).join('')||'<div class="text-muted text-xs">No scripture references detected yet.</div>';document.getElementById('series-breakdown').innerHTML=Object.entries(seriesCounts).map(([name,c])=>`<div class="timeline-item"><div class="time">${c}</div><div class="content"><strong>${name}</strong></div></div>`).join('')||'<div class="text-muted text-xs">No sermon series created yet.</div>';}
-init();
-</script>
+</main>
+<script type="module">import { renderDashboard } from './assets/js/analytics.js'; renderDashboard();</script>
 </body>
 </html>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hmgacademyhub.github.io/sermonscribe/sitemap.xml

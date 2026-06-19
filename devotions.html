@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="HMG SermonScribe v3 — SOAP and BREAD devotional center. Create, save, and review daily devotions. Offline-first.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/svg+xml" href="./assets/images/icon-192.svg">
+<title>Daily Devotions — SermonScribe v3</title>
+<link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body>
+<header class="app-header" role="banner">
+  <a class="brand" href="./index.html">
+    <div class="brand-logo" aria-hidden="true">✝</div>
+    <div class="brand-text"><span class="brand-title">SermonScribe v3</span><span class="brand-sub">Devotions</span></div>
+  </a>
+  <nav class="header-nav">
+    <a href="./index.html">Editor</a><a href="./live.html">Live</a><a href="./analytics.html">Analytics</a><a href="./notes.html">Notes</a><a href="./bulletin.html">Bulletin</a><a href="./prayer-wall.html">Prayer Wall</a>
+  </nav>
+</header>
+<main class="app-shell" style="padding:1rem;max-width:900px;margin:0 auto" role="main">
+  <h1>🙏 Daily Devotions</h1>
+  <p>Choose a method below. Your devotions are saved locally and work offline.</p>
+
+  <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap">
+    <button class="btn btn-primary" onclick="showMethod('soap')">SOAP Method</button>
+    <button class="btn btn-primary" onclick="showMethod('bread')">BREAD Method</button>
+    <button class="btn btn-ghost" onclick="showSaved()">📚 Saved Devotions</button>
+  </div>
+
+  <div id="devotion-form">
+    <div class="card">
+      <div class="card-header" id="method-title">SOAP Devotion</div>
+      <div class="card-body">
+        <div class="form-group"><label>Date</label><input type="date" id="dev-date"></div>
+        <div class="form-group"><label>Scripture Reference</label><input type="text" id="dev-scripture" placeholder="e.g. Psalm 23:1"></div>
+        <div id="steps"></div>
+        <div style="display:flex;gap:.5rem;margin-top:1rem">
+          <button class="btn btn-primary" onclick="saveDevotion()">💾 Save Devotion</button>
+          <button class="btn btn-ghost" onclick="printDevotion()">🖨️ Print</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="saved-devotions" style="margin-top:1rem"></div>
+</main>
+
+<script type="module">
+import { saveDevotion as saveDev, loadDevotions, deleteDevotion } from './assets/js/storage.js';
+import { generateId, getToday, createToast } from './assets/js/utils.js';
+
+const methods = {
+  soap: [
+    { label: 'Scripture', icon: 'S', desc: 'Write out the scripture passage.', id: 'step-scripture' },
+    { label: 'Observation', icon: 'O', desc: 'What do you see? Facts, context, people, places.', id: 'step-observation' },
+    { label: 'Application', icon: 'A', desc: 'How does this apply to your life today?', id: 'step-application' },
+    { label: 'Prayer', icon: 'P', desc: 'Write a prayer based on the passage.', id: 'step-prayer' }
+  ],
+  bread: [
+    { label: 'Blessing', icon: 'B', desc: 'What blessing or promise stands out?', id: 'step-blessing' },
+    { label: 'Revelation', icon: 'R', desc: 'What new insight or revelation did you receive?', id: 'step-revelation' },
+    { label: 'Examination', icon: 'E', desc: 'How does this examine your heart and actions?', id: 'step-examination' },
+    { label: 'Application', icon: 'A', desc: 'What will you do differently?', id: 'step-app' },
+    { label: 'Delivery / Prayer', icon: 'D', desc: 'Commit to prayer and sharing with others.', id: 'step-delivery' }
+  ]
+};
+
+let currentMethod = 'soap';
+window.showMethod = function(m) {
+  currentMethod = m;
+  document.getElementById('method-title').textContent = (m === 'soap' ? 'SOAP' : 'BREAD') + ' Devotion';
+  const container = document.getElementById('steps');
+  container.innerHTML = methods[m].map(step => `
+    <div class="devotion-step" style="margin-top:1rem">
+      <div class="step-icon">${step.icon}</div>
+      <div class="step-body" style="flex:1">
+        <div class="step-label">${step.label}</div>
+        <textarea id="${step.id}" placeholder="${step.desc}" style="width:100%;min-height:80px;border-radius:8px;border:1px solid var(--border);padding:.5rem;background:var(--surface);color:var(--text)"></textarea>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('dev-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('saved-devotions').style.display = 'none';
+  document.getElementById('devotion-form').style.display = 'block';
+};
+
+window.showSaved = async function() {
+  document.getElementById('devotion-form').style.display = 'none';
+  const container = document.getElementById('saved-devotions');
+  container.style.display = 'block';
+  const list = await loadDevotions();
+  if (!list.length) { container.innerHTML = '<p>No saved devotions yet.</p>'; return; }
+  container.innerHTML = '<h2>Saved Devotions</h2>' + list.map(d => `
+    <div class="card" style="margin-top:.5rem">
+      <div class="card-body">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <strong>${d.scripture || 'Devotion'}</strong>
+          <span style="color:var(--text-muted);font-size:.8rem">${d.date || d.createdAt?.slice(0,10)}</span>
+        </div>
+        <div style="margin-top:.5rem;font-size:.9rem">${d.method?.toUpperCase()}</div>
+        <div style="margin-top:.5rem;white-space:pre-wrap">${Object.entries(d.steps || {}).map(([k,v]) => `<strong>${k}:</strong> ${v}<br>`).join('')}</div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:.5rem" onclick="deleteDevotionEntry('${d.id}')">Delete</button>
+      </div>
+    </div>
+  `).join('');
+};
+
+window.saveDevotion = async function() {
+  const steps = {};
+  methods[currentMethod].forEach(s => { const el = document.getElementById(s.id); if (el) steps[s.label] = el.value; });
+  const devotion = { id: generateId(), method: currentMethod, date: document.getElementById('dev-date').value || getToday(), scripture: document.getElementById('dev-scripture').value, steps, createdAt: new Date().toISOString() };
+  await saveDev(devotion); createToast('Devotion saved!', 'success');
+};
+
+window.deleteDevotionEntry = async function(id) { await deleteDevotion(id); showSaved(); createToast('Deleted.', 'info'); };
+window.printDevotion = function() { window.print(); };
+
+showMethod('soap');
+</script>
+</body>
+</html>
