@@ -1,13 +1,8 @@
-# GitHub Actions workflow to deploy HMG SermonScribe v2 to GitHub Pages
-# Runs on every push to the main branch.
-# Author: Adewale Samson Adeagbo, HMG Concepts
-
-name: Deploy HMG SermonScribe v2 to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch:
+    branches: [main]
 
 permissions:
   contents: read
@@ -20,24 +15,16 @@ concurrency:
 
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Pages
         uses: actions/configure-pages@v5
-
-      - name: Upload static site artifact
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # If your repo root IS the sermon v2 folder, use path: .
-          # If your repo root contains a parent folder and sermon v2/ is inside it, use path: ./sermon v2
-          path: ./sermon v2
-
+          path: './sermonscribe'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
