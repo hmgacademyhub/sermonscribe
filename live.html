@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="HMG SermonScribe v2 — Live Congregation Caption Display. Project sermon captions onto screens or share with congregation in real time.">
+<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="assets/images/icon-192.svg">
+<title>Live Captions — HMG SermonScribe v2</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+body,html{margin:0;padding:0;height:100%;background:#0f172a;color:#f1f5f9;overflow:hidden;}
+.live-container{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem;text-align:center;}
+.live-caption{font-size:clamp(2rem,6vw,5rem);line-height:1.4;font-weight:600;max-width:1200px;transition:opacity .3s;min-height:2em;}
+.live-meta{position:fixed;bottom:1rem;left:1rem;right:1rem;display:flex;justify-content:space-between;align-items:center;font-size:.85rem;opacity:.6;}
+.live-indicator{display:flex;align-items:center;gap:.5rem;}
+.live-dot{width:10px;height:10px;border-radius:50%;background:#dc2626;animation:pulse-record 1.5s infinite;}
+.qr-zone{position:fixed;top:1rem;right:1rem;background:rgba(255,255,255,0.08);padding:.5rem;border-radius:8px;}
+.qr-zone img{width:80px;height:80px;border-radius:4px;}
+#status{font-size:.9rem;opacity:.7;margin-top:1rem;}
+</style>
+</head>
+<body>
+<div class="live-container">
+  <div id="live-caption" class="live-caption">Waiting for live transcript...</div>
+  <div id="status">Open this page on a projector or share the URL with the congregation.</div>
+</div>
+<div class="live-meta">
+  <div class="live-indicator"><div class="live-dot"></div><span>LIVE</span></div>
+  <div>HMG SermonScribe v2 — <span id="session-id"></span></div>
+</div>
+
+<script>
+(function(){
+  const params=new URLSearchParams(window.location.search);
+  const session=params.get('session')||'default';
+  document.getElementById('session-id').textContent=session.slice(0,12)+'...';
+  const captionEl=document.getElementById('live-caption');
+  const statusEl=document.getElementById('status');
+  function updateFromStorage(){try{const payload=JSON.parse(localStorage.getItem('hmg-live-'+session)||'null');if(payload&&payload.text){captionEl.textContent=payload.text.slice(-200);statusEl.textContent='Updated '+new Date(payload.timestamp).toLocaleTimeString();}else{captionEl.textContent='Waiting for live transcript...';}}catch(_){}}
+  updateFromStorage();
+  window.addEventListener('storage',(e)=>{if(e.key==='hmg-live-'+session){updateFromStorage();}});
+  if(typeof BroadcastChannel!=='undefined'){const bc=new BroadcastChannel('hmg-sermonscribe-live');bc.onmessage=(e)=>{if(e.data?.session===session&&e.data?.text){captionEl.textContent=e.data.text.slice(-200);statusEl.textContent='Updated live via BroadcastChannel';}};}
+  setInterval(updateFromStorage,3000);
+})();
+</script>
+</body>
+</html>

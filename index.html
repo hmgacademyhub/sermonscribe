@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<meta name="description" content="HMG SermonScribe v2 — Enterprise sermon transcription, live congregation captions, analytics, Bible flashcards, and church intelligence. Built by HMG Gospel under HMG Concepts. Zero API cost.">
+<meta name="author" content="Adewale Samson Adeagbo, HMG Concepts">
+<meta name="theme-color" content="#0f172a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SermonScribe v2">
+<meta name="application-name" content="HMG SermonScribe v2">
+<meta name="keywords" content="sermon transcription, church technology, FaithTech, speech to text, live captions, sermon analytics, HMG Gospel, HMG Concepts, Nigeria, offline first, PWA, congregation QR, Bible flashcards">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="HMG SermonScribe v2 — Real-Time Sermon Transcription & Church Intelligence">
+<meta property="og:description" content="Take sermon notes in real time as the pastor preaches. Live congregation captions, sermon analytics, Bible flashcards, discussion guides. No AI API cost. Works offline.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://hmgconcepts.pages.dev/sermonscribe">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HMG SermonScribe v2 — Real-Time Sermon Transcription & Church Intelligence">
+<meta name="twitter:description" content="Take sermon notes in real time as the pastor preaches. Live congregation captions, sermon analytics, Bible flashcards, discussion guides. No AI API cost. Works offline.">
+<link rel="canonical" href="https://hmgconcepts.pages.dev/sermonscribe">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="assets/images/icon-192.svg">
+<link rel="apple-touch-icon" href="assets/images/icon-192.svg">
+<title>HMG SermonScribe v2 — Real-Time Sermon Transcription & Church Intelligence</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" defer></script>
+</head>
+<body>
+
+<header class="app-header">
+  <a href="index.html" class="brand" aria-label="HMG SermonScribe v2 Home">
+    <div class="brand-logo" aria-hidden="true">S</div>
+    <div class="brand-text">
+      <span class="brand-title" id="brand-title">SermonScribe v2</span>
+      <span class="brand-sub">HMG Gospel · FaithTech</span>
+    </div>
+  </a>
+  <nav class="header-nav" aria-label="Primary">
+    <a href="index.html" title="Transcribe"><span>📝</span><span>Transcribe</span></a>
+    <a href="live.html" target="_blank" title="Live Captions"><span>📡</span><span>Live</span></a>
+    <a href="analytics.html" target="_blank" title="Analytics"><span>📊</span><span>Analytics</span></a>
+    <a href="about.html" title="About"><span>ℹ️</span><span>About</span></a>
+    <a href="features.html" title="Features"><span>✨</span><span>Features</span></a>
+    <a href="deploy.html" title="Deploy"><span>🚀</span><span>Deploy</span></a>
+    <button id="theme-toggle" class="icon-btn" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+    <button id="menu-toggle" class="icon-btn" title="Menu" aria-label="Open menu">☰</button>
+  </nav>
+</header>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar" role="complementary" aria-label="Sermon library">
+    <div class="sidebar-header">
+      <div class="sidebar-title">📚 My Sermons</div>
+      <button class="tool-btn" title="New sermon" onclick="window.newSermon()" aria-label="New sermon">➕</button>
+    </div>
+    <div class="p-2" style="border-bottom:1px solid var(--border);">
+      <input id="search-input" type="text" placeholder="🔍 Search sermons..." aria-label="Search sermons" style="font-size:.82rem;padding:.4rem .6rem;">
+      <select id="series-list" style="font-size:.78rem;padding:.35rem .5rem;margin-top:.4rem;" onchange="window.seriesFilter=this.value;window.loadSermonList();">
+        <option value="">All Series</option>
+      </select>
+    </div>
+    <div class="sidebar-body" id="sermon-list" aria-live="polite">
+      <div class="text-muted text-xs p-2">Loading sermons...</div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="flex gap-2" style="justify-content:center; margin-bottom:.5rem;">
+        <button class="btn btn-sm btn-ghost" onclick="window.openBackup()">💾 Backup</button>
+        <button class="btn btn-sm btn-ghost" onclick="window.doRestore()">📥 Restore</button>
+      </div>
+      <div>Built by HMG Gospel</div>
+      <div style="font-size:.65rem; opacity:.7; margin-top:.25rem;">© HMG Concepts · Est. 2015</div>
+    </div>
+  </aside>
+  <div id="sidebar-overlay" class="drawer-overlay" style="z-index:44;" onclick="document.getElementById('sidebar').classList.remove('open')"></div>
+
+  <main class="main-stage" role="main">
+    <div class="card" style="padding:.6rem 1rem; display:flex; align-items:center; gap:.75rem; flex-wrap:wrap; border-radius:var(--radius);">
+      <input id="sermon-title" type="text" placeholder="Sermon Title (e.g., The Power of Faith)" aria-label="Sermon title" style="border:none; background:transparent; font-weight:700; font-size:1.05rem; flex:1; min-width:200px; padding:0; outline:none; color:var(--text);">
+      <div class="flex gap-2 items-center" style="flex-wrap:wrap;">
+        <input id="preacher-name" type="text" placeholder="Preacher / Pastor Name" aria-label="Preacher name" style="width:160px; border:1px solid var(--border); background:var(--surface); font-size:.85rem; padding:.4rem .6rem; border-radius:var(--radius-sm);">
+        <select id="series-select" aria-label="Sermon series" style="width:130px; font-size:.85rem; padding:.4rem .6rem; border-radius:var(--radius-sm);">
+          <option value="">No Series</option>
+        </select>
+        <select id="lang-select" aria-label="Speech language" style="width:140px; font-size:.85rem; padding:.4rem .6rem; border-radius:var(--radius-sm);">
+          <option value="en-NG">English (NG)</option><option value="en-US">English (US)</option><option value="en-GB">English (UK)</option><option value="yo-NG">Yoruba (NG)</option><option value="ig-NG">Igbo (NG)</option><option value="ha-NG">Hausa (NG)</option>
+        </select>
+        <select id="speaker-select" aria-label="Speaker label" style="width:130px; font-size:.85rem; padding:.4rem .6rem; border-radius:var(--radius-sm);">
+          <option value="Pastor">Pastor</option><option value="Guest">Guest Speaker</option><option value="Bible Reader">Bible Reader</option><option value="Choir">Choir / Worship</option><option value="">None</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card editor-wrap">
+      <div class="toolbar" role="toolbar" aria-label="Formatting">
+        <button class="tool-btn" onclick="window.formatDoc('bold')" title="Bold (Ctrl+B)" aria-label="Bold">B</button>
+        <button class="tool-btn" onclick="window.formatDoc('italic')" title="Italic (Ctrl+I)" aria-label="Italic">I</button>
+        <button class="tool-btn" onclick="window.formatDoc('underline')" title="Underline" aria-label="Underline">U</button>
+        <span class="divider" aria-hidden="true"></span>
+        <button class="tool-btn" onclick="window.formatDoc('formatBlock','h2')" title="Heading" aria-label="Heading">H2</button>
+        <button class="tool-btn" onclick="window.formatDoc('formatBlock','h3')" title="Sub-heading" aria-label="Sub-heading">H3</button>
+        <span class="divider" aria-hidden="true"></span>
+        <button class="tool-btn" onclick="window.formatDoc('insertUnorderedList')" title="Bullet list" aria-label="Bullet list">•</button>
+        <button class="tool-btn" onclick="window.formatDoc('insertOrderedList')" title="Numbered list" aria-label="Numbered list">1.</button>
+        <button class="tool-btn" onclick="window.formatDoc('formatBlock','blockquote')" title="Quote block" aria-label="Quote block">❝</button>
+        <span class="divider" aria-hidden="true"></span>
+        <button class="tool-btn" onclick="window.insertTemplate('expository')" title="Expository template" aria-label="Expository template">📋 Exp</button>
+        <button class="tool-btn" onclick="window.insertTemplate('topical')" title="Topical template" aria-label="Topical template">📋 Top</button>
+        <button class="tool-btn" onclick="window.insertTemplate('testimony')" title="Testimony template" aria-label="Testimony template">📋 Tst</button>
+        <span class="divider" aria-hidden="true"></span>
+        <button class="tool-btn" onclick="window.addBookmark()" title="Add Bookmark (Ctrl+B)" aria-label="Add bookmark">🔖</button>
+        <button class="tool-btn" onclick="window.openFindReplace()" title="Find & Replace (Ctrl+F)" aria-label="Find and replace">🔍</button>
+        <button class="tool-btn" onclick="window.openFillerRemoval()" title="Remove filler words" aria-label="Remove filler words">✂️</button>
+        <button class="tool-btn" onclick="window.openPresent()" title="Presenter mode (Ctrl+P)" aria-label="Presenter mode">📽️</button>
+        <button class="tool-btn" onclick="window.openSettings()" title="Settings" aria-label="Settings">⚙️</button>
+        <div style="margin-left:auto; display:flex; gap:.3rem;">
+          <button id="record-btn" class="btn btn-primary" onclick="window.toggleRecording()" aria-label="Start or stop recording">🎙️ Start Recording</button>
+          <button id="pause-btn" class="btn btn-ghost" onclick="window.togglePauseRecording()" style="display:none;" aria-label="Pause or resume recording">⏸ Pause</button>
+        </div>
+      </div>
+      <div id="editor" class="sermon-editor" contenteditable="true" aria-label="Sermon editor" role="textbox" aria-multiline="true" spellcheck="false">
+        <h2>Introduction</h2><p><br></p><h2>Main Points</h2><p><br></p><h2>Conclusion</h2><p><br></p>
+      </div>
+      <div id="verse-autocomplete" style="display:none; position:absolute; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:.5rem; max-height:200px; overflow-y:auto; z-index:50; box-shadow:var(--shadow-lg);"></div>
+      <div id="audio-attachment" class="no-print"></div>
+      <div class="status-bar" id="status-bar">
+        <div class="flex items-center gap-3">
+          <span id="word-count">0 words</span>
+          <span id="read-time">~0 min read</span>
+          <span id="last-saved" class="text-muted">Not saved yet</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="btn btn-sm btn-ghost" onclick="window.openLiveCaption()">📡 Live</button>
+          <button class="btn btn-sm btn-ghost" onclick="window.openShare()">🔗 Share</button>
+          <button class="btn btn-sm btn-ghost" onclick="window.openExport()">📤 Export</button>
+          <button class="btn btn-sm btn-danger" onclick="window.deleteCurrentSermon()">🗑️ Delete</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <aside class="right-panel" role="complementary" aria-label="Assistant panel">
+    <div class="card" style="border:none; border-left:none; border-radius:0; height:100%; display:flex; flex-direction:column;">
+      <div class="card-header" style="border-radius:0;">
+        <span>🙏 Assistant</span>
+        <div class="flex gap-1">
+          <button class="tool-btn bible-tab active" data-tab="detected" onclick="window.setBibleTab('detected')" title="Detected references" aria-label="Detected references">🔍</button>
+          <button class="tool-btn bible-tab" data-tab="common" onclick="window.setBibleTab('common')" title="Common verses" aria-label="Common verses">📖</button>
+          <button class="tool-btn bible-tab" data-tab="search" onclick="window.setBibleTab('search')" title="Search verses" aria-label="Search verses">🔎</button>
+        </div>
+      </div>
+      <div class="card-body compact" style="flex:1; overflow-y:auto;">
+        <div id="bible-panel" class="flex flex-col gap-2">
+          <div class="text-muted text-xs">Start typing or recording to detect scripture references automatically.</div>
+        </div>
+      </div>
+      <div class="card-header" style="border-top:1px solid var(--border); border-bottom:none;">
+        <span>🎨 Themes</span>
+      </div>
+      <div class="card-body compact" id="keyword-panel">
+        <div class="text-muted text-xs">Keywords will appear as you write.</div>
+      </div>
+      <div class="card-header" style="border-top:1px solid var(--border); border-bottom:none;">
+        <span>🔖 Bookmarks</span>
+      </div>
+      <div class="card-body compact" id="bookmark-panel">
+        <div class="text-muted text-xs">Tap 🔖 during recording to mark important moments.</div>
+      </div>
+      <div class="card-header" style="border-top:1px solid var(--border); border-bottom:none;">
+        <span>🙏 Prayers</span>
+      </div>
+      <div class="card-body compact" id="prayer-panel">
+        <div class="text-muted text-xs">Detected prayer requests will appear here.</div>
+      </div>
+      <div class="card-header" style="border-top:1px solid var(--border); border-bottom:none;">
+        <span>💬 Shareable Quotes</span>
+      </div>
+      <div class="card-body compact" id="quote-panel">
+        <div class="text-muted text-xs">Shareable quotes will appear as you write.</div>
+      </div>
+      <div class="card-footer" style="padding:.75rem; border-top:1px solid var(--border); font-size:.75rem; color:var(--text-muted); text-align:center;">
+        HMG SermonScribe v2.0<br>
+        <a href="https://wa.me/2348100866322" target="_blank" rel="noopener">WhatsApp Support</a> ·
+        <a href="https://hmgconcepts.pages.dev" target="_blank" rel="noopener">HMG Concepts</a>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<div id="record-hud" class="record-hud" style="display:none;" role="status" aria-live="polite">
+  <div class="record-dot" aria-hidden="true"></div>
+  <div class="record-time" id="record-time">0:00</div>
+  <div class="record-status" id="record-status">Listening...</div>
+</div>
+
+<div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+<div class="drawer-overlay" id="export-overlay" onclick="window.closeExport()"></div>
+<aside class="drawer" id="export-drawer" role="dialog" aria-label="Export sermon">
+  <div class="drawer-header"><h3 style="margin:0; font-size:1rem;">📤 Export Sermon</h3><button class="tool-btn" onclick="window.closeExport()" aria-label="Close export">✕</button></div>
+  <div class="drawer-body">
+    <p class="text-sm text-muted">Choose a format. All processing happens in your browser — no server, no cost.</p>
+    <div class="flex flex-col gap-2 mt-3">
+      <button class="btn btn-block btn-ghost" onclick="window.doExport('txt')">📝 Plain Text (.txt)</button>
+      <button class="btn btn-block btn-ghost" onclick="window.doExport('md')">📝 Markdown (.md)</button>
+      <button class="btn btn-block btn-ghost" onclick="window.doExport('html')">🌐 Web Page (.html)</button>
+      <button class="btn btn-block btn-ghost" onclick="window.doExport('docx')">📄 Microsoft Word (.doc)</button>
+      <button class="btn btn-block btn-ghost" onclick="window.doExport('print')">🖨️ Print / Save as PDF</button>
+      <button class="btn btn-block btn-ghost" onclick="window.doExport('srt')">🎬 Subtitles (.srt)</button>
+      <button class="btn btn-block btn-ghost" onclick="window.doExport('devotional')">📖 5-Day Devotional (.md)</button>
+      <button class="btn btn-block btn-success" onclick="window.doExport('whatsapp')">💬 Share via WhatsApp</button>
+    </div>
+    <div class="mt-3 p-2" style="border:1px dashed var(--border); border-radius:var(--radius-sm);">
+      <p class="text-xs text-muted mb-2"><strong>Generate Church Materials</strong></p>
+      <div class="flex gap-2">
+        <button class="btn btn-sm btn-ghost" onclick="window.openOutlineGenerator(); window.closeExport();">📋 Sermon Outline</button>
+        <button class="btn btn-sm btn-ghost" onclick="window.openDiscussionGenerator(); window.closeExport();">❓ Discussion Questions</button>
+        <button class="btn btn-sm btn-ghost" onclick="window.openFlashcards(); window.closeExport();">🃏 Flash Cards</button>
+      </div>
+    </div>
+  </div>
+  <div class="drawer-footer"><button class="btn btn-ghost" onclick="window.closeExport()">Close</button></div>
+</aside>
+
+<div class="modal-overlay" id="share-modal" role="dialog" aria-modal="true" aria-label="Share sermon">
+  <div class="modal">
+    <div class="modal-header"><h3 style="margin:0; font-size:1rem;">🔗 Share Sermon</h3><button class="tool-btn" onclick="window.closeModal('share-modal')" aria-label="Close">✕</button></div>
+    <div class="modal-body">
+      <p class="text-sm text-muted">Anyone with this link can view a snapshot. No server is used — the sermon is encoded in the URL itself.</p>
+      <div class="form-group mt-3"><label for="share-url">Shareable URL</label><div class="flex gap-2"><input id="share-url" type="text" readonly onclick="this.select()" style="font-size:.85rem;"><button class="btn btn-primary" onclick="window.copyShareURL()">Copy</button></div></div>
+      <div class="qr-wrap mt-2"><div id="share-qr"></div><div class="text-xs text-muted">Scan with a phone to open instantly.</div></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="window.closeModal('share-modal')">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="live-qr-modal" role="dialog" aria-modal="true" aria-label="Live QR code">
+  <div class="modal">
+    <div class="modal-header"><h3 style="margin:0; font-size:1rem;">📡 Live Congregation QR</h3><button class="tool-btn" onclick="window.closeModal('live-qr-modal')" aria-label="Close">✕</button></div>
+    <div class="modal-body" id="live-qr-modal-body"></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="window.closeModal('live-qr-modal')">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="settings-modal" role="dialog" aria-modal="true" aria-label="Settings">
+  <div class="modal">
+    <div class="modal-header"><h3 style="margin:0; font-size:1rem;">⚙️ Settings</h3><button class="tool-btn" onclick="window.closeModal('settings-modal')" aria-label="Close">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label for="set-preacher">Default Preacher / Pastor Name</label><input id="set-preacher" type="text" placeholder="e.g. Pastor Adeagbo" onchange="window.saveSetting('preacherName', this.value)"></div>
+      <div class="form-group"><label for="set-language">Default Speech Language</label><select id="set-language" onchange="window.saveSetting('language', this.value)"><option value="en-NG">English (Nigeria)</option><option value="en-US">English (US)</option><option value="en-GB">English (UK)</option><option value="yo-NG">Yoruba</option><option value="ig-NG">Igbo</option><option value="ha-NG">Hausa</option></select></div>
+      <div class="form-group"><label for="set-theme">Appearance</label><select id="set-theme" onchange="window.saveSetting('theme', this.value)"><option value="light">Light</option><option value="dark">Dark</option><option value="system">System</option></select></div>
+      <div class="form-group"><label for="set-autosave">Auto-save interval (seconds)</label><input id="set-autosave" type="number" min="5" max="60" value="10" onchange="window.saveSetting('autoSaveInterval', parseInt(this.value))"></div>
+      <div class="text-sm text-muted mt-2">All settings stored locally in your browser. No data leaves your device unless you choose to export or share.</div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="window.closeModal('settings-modal')">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="backup-modal" role="dialog" aria-modal="true" aria-label="Backup and restore">
+  <div class="modal">
+    <div class="modal-header"><h3 style="margin:0; font-size:1rem;">💾 Backup & Restore</h3><button class="tool-btn" onclick="window.closeModal('backup-modal')" aria-label="Close">✕</button></div>
+    <div class="modal-body">
+      <p class="text-sm text-muted">Keep your sermon library safe by downloading a backup JSON file. Restore it later on this device or another.</p>
+      <div class="flex flex-col gap-2 mt-3"><button class="btn btn-block btn-primary" onclick="window.doBackup()">⬇️ Download Backup (.json)</button><button class="btn btn-block btn-ghost" onclick="window.doRestore()">⬆️ Restore from Backup</button></div>
+      <div class="text-xs text-muted mt-3">Tip: Save your backup to Google Drive, Dropbox, or email it to yourself.</div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="window.closeModal('backup-modal')">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="import-share-modal" role="dialog" aria-modal="true" aria-label="Import shared sermon">
+  <div class="modal">
+    <div class="modal-header"><h3 style="margin:0; font-size:1rem;">📥 Import Shared Sermon</h3><button class="tool-btn" onclick="window.closeModal('import-share-modal')" aria-label="Close">✕</button></div>
+    <div class="modal-body"><p class="text-sm">Someone shared a sermon with you.</p><p class="font-semibold mt-2">Title: <span id="import-share-title">Untitled</span></p></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="window.closeModal('import-share-modal')">Ignore</button><button id="import-share-btn" class="btn btn-primary">Import Sermon</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="find-replace-modal" role="dialog" aria-modal="true" aria-label="Find and replace">
+  <div class="modal">
+    <div class="modal-header"><h3 style="margin:0; font-size:1rem;">🔍 Find & Replace</h3><button class="tool-btn" onclick="window.closeModal('find-replace-modal')" aria-label="Close">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label for="fr-find">Find</label><input id="fr-find" type="text" placeholder="Text to find"></div>
+      <div class="form-group"><label for="fr-replace">Replace with</label><input id="fr-replace" type="text" placeholder="Replacement text"></div>
+      <div class="flex items-center gap-2"><input type="checkbox" id="fr-regex"><label for="fr-regex" style="margin:0;">Use regular expressions</label></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="window.closeModal('find-replace-modal')">Cancel</button><button class="btn btn-primary" onclick="window.doFindReplace()">Replace All</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="outline-modal" role="dialog" aria-modal="true" aria-label="Sermon outline">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header"><h3 style="margin:0; font-size:1rem;">📋 Auto-Generated Sermon Outline</h3><button class="tool-btn" onclick="window.closeModal('outline-modal')" aria-label="Close">✕</button></div>
+    <div class="modal-body"><textarea id="outline-preview" style="width:100%;min-height:300px;font-family:monospace;font-size:.85rem;" readonly></textarea></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="window.closeModal('outline-modal')">Close</button><button class="btn btn-primary" onclick="window.downloadOutline()">Download .md</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="discussion-modal" role="dialog" aria-modal="true" aria-label="Discussion questions">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header"><h3 style="margin:0; font-size:1rem;">❓ Discussion Questions</h3><button class="tool-btn" onclick="window.closeModal('discussion-modal')" aria-label="Close">✕</button></div>
+    <div class="modal-body"><textarea id="discussion-preview" style="width:100%;min-height:300px;font-family:monospace;font-size:.85rem;" readonly></textarea></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="window.closeModal('discussion-modal')">Close</button><button class="btn btn-primary" onclick="window.downloadDiscussion()">Download .md</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="flashcard-modal" role="dialog" aria-modal="true" aria-label="Flash cards">
+  <div class="modal" style="max-width:540px;">
+    <div class="modal-header"><h3 style="margin:0; font-size:1rem;">🃏 Scripture Flash Cards</h3><button class="tool-btn" onclick="window.closeModal('flashcard-modal')" aria-label="Close">✕</button></div>
+    <div class="modal-body"><p class="text-sm text-muted">Click a card to reveal the verse. Tap "Save All" to store in your library.</p><div id="flashcard-container" class="mt-3 flex flex-col gap-3"></div></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="window.closeModal('flashcard-modal')">Close</button><button class="btn btn-primary" onclick="window.saveAllFlashcards()">Save All</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="branding-modal" role="dialog" aria-modal="true" aria-label="Church branding">
+  <div class="modal">
+    <div class="modal-header"><h3 style="margin:0; font-size:1rem;">🏛️ Custom Church Branding</h3><button class="tool-btn" onclick="window.closeModal('branding-modal')" aria-label="Close">✕</button></div>
+    <div class="modal-body">
+      <p class="text-sm text-muted">Personalise the app for your church. All branding is stored locally on this device.</p>
+      <div class="form-group mt-2"><label for="cb-name">Church Name</label><input id="cb-name" type="text" placeholder="e.g. Redeemed Christian Church of God"></div>
+      <div class="form-group"><label for="cb-color">Accent Colour</label><input id="cb-color" type="color" value="#d97706"></div>
+      <div class="form-group"><label for="cb-logo">Logo URL (optional)</label><input id="cb-logo" type="text" placeholder="https://yourchurch.com/logo.png"></div>
+      <div class="form-group"><label for="cb-phone">Church WhatsApp / Phone</label><input id="cb-phone" type="text" placeholder="+234 ..."></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="window.closeModal('branding-modal')">Cancel</button><button class="btn btn-primary" onclick="window.saveChurchBranding()">Save Branding</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="audio-upload-modal" role="dialog" aria-modal="true" aria-label="Upload audio">
+  <div class="modal">
+    <div class="modal-header"><h3 style="margin:0; font-size:1rem;">🎙️ Upload Audio for Transcription</h3><button class="tool-btn" onclick="window.closeModal('audio-upload-modal')" aria-label="Close">✕</button></div>
+    <div class="modal-body">
+      <p class="text-sm text-muted">Upload a recorded sermon MP3, WAV, or M4A. The browser will play it back and transcribe using the built-in speech engine.</p>
+      <div class="audio-upload-zone mt-3" id="audio-upload-zone"><div style="font-size:2rem;">📁</div><p>Drag & drop audio here, or click to browse</p><p class="text-xs">Supported: MP3, WAV, M4A, WebM</p></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="window.closeModal('audio-upload-modal')">Close</button></div>
+  </div>
+</div>
+
+<footer class="no-print" style="background:var(--primary); color:var(--text-inverse); padding:2rem 1rem; text-align:center; font-size:.85rem; margin-top:auto;">
+  <div style="max-width:900px; margin:0 auto;">
+    <div style="font-weight:700; font-size:1.1rem; margin-bottom:.5rem;">His Marvellous Grace — HMG Concepts</div>
+    <p style="opacity:.85; max-width:600px; margin:0 auto 1rem;">HMG SermonScribe v2 is a <strong>FaithTech</strong> product of <strong>HMG Gospel</strong> under the HMG Concepts ecosystem. Built by <strong>Adewale Samson Adeagbo</strong> — educator, data scientist, and AI-Augmented Solutions Developer.</p>
+    <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
+      <a href="https://hmgconcepts.pages.dev" target="_blank" rel="noopener" style="color:var(--accent-light); text-decoration:none;">HMG Concepts</a>
+      <a href="https://hmgacademy.pages.dev" target="_blank" rel="noopener" style="color:var(--accent-light); text-decoration:none;">HMG Academy</a>
+      <a href="https://hmgtechnologies.pages.dev" target="_blank" rel="noopener" style="color:var(--accent-light); text-decoration:none;">HMG Technologies</a>
+      <a href="https://hmgmedia.pages.dev" target="_blank" rel="noopener" style="color:var(--accent-light); text-decoration:none;">HMG Media</a>
+      <a href="https://hmggospel.pages.dev" target="_blank" rel="noopener" style="color:var(--accent-light); text-decoration:none;">HMG Gospel</a>
+      <a href="https://cssadewale.pages.dev" target="_blank" rel="noopener" style="color:var(--accent-light); text-decoration:none;">About the Builder</a>
+    </div>
+    <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
+      <a href="https://wa.me/2348100866322" target="_blank" rel="noopener" style="color:#fff; text-decoration:none; opacity:.9;">💬 WhatsApp +234 810 086 6322</a>
+      <a href="https://youtube.com/@hmgconcepts" target="_blank" rel="noopener" style="color:#fff; text-decoration:none; opacity:.9;">📺 YouTube @hmgconcepts</a>
+      <a href="https://github.com/cssadewale" target="_blank" rel="noopener" style="color:#fff; text-decoration:none; opacity:.9;">🐙 GitHub @cssadewale</a>
+    </div>
+    <div style="opacity:.6; font-size:.75rem;">© 2015 — 2026 HMG Concepts. Lagos, Nigeria. All rights reserved. | <a href="features.html" style="color:var(--accent-light);">Features</a> | <a href="deploy.html" style="color:var(--accent-light);">Deploy</a> | <a href="#" onclick="window.openChurchBranding();return false;" style="color:var(--accent-light);">Church Branding</a></div>
+  </div>
+</footer>
+
+<script type="module" src="assets/js/app.js"></script>
+</body>
+</html>
