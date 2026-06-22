@@ -1,45 +1,107 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="HMG SermonScribe v3 — Feature documentation. 50+ enterprise features for sermon transcription, church intelligence, and offline ministry tools.">
-<meta name="robots" content="index, follow">
-<meta name="theme-color" content="#0f172a">
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" type="image/svg+xml" href="./assets/images/icon-192.svg">
-<title>Features — SermonScribe v3</title>
-<link rel="stylesheet" href="./assets/css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Features - SermonScribe v4</title>
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <style>.features-page { max-width:1000px; margin:0 auto; padding:2rem 1rem; }.feature-section { margin-bottom:2rem; }.feature-section h2 { border-bottom:2px solid var(--accent); padding-bottom:.5rem; }.feature-item { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; margin-bottom:1rem; }.feature-item h3 { margin:0 0 .5rem; color:var(--primary); }.feature-item p { margin:0; color:var(--text-muted); }.badge { display:inline-block; padding:.15rem .5rem; background:var(--accent); color:#fff; border-radius:20px; font-size:.7rem; font-weight:700; }.badge.new { background:var(--success); }</style>
 </head>
 <body>
-<header class="app-header" role="banner">
-  <a class="brand" href="./index.html">
-    <div class="brand-logo" aria-hidden="true">✝</div>
-    <div class="brand-text"><span class="brand-title">SermonScribe v3</span><span class="brand-sub">Features</span></div>
-  </a>
-  <nav class="header-nav">
-    <a href="./index.html">Editor</a><a href="./live.html">Live</a><a href="./analytics.html">Analytics</a><a href="./notes.html">Notes</a><a href="./devotions.html">Devotions</a><a href="./bulletin.html">Bulletin</a><a href="./prayer-wall.html">Prayer Wall</a><a href="./about.html">About</a><a href="./deploy.html">Deploy</a>
-  </nav>
-</header>
-<main class="app-shell" style="padding:1rem;max-width:900px;margin:0 auto" role="main">
-  <h1>📖 Feature Documentation</h1>
-  <p>HMG SermonScribe v3 includes 50+ enterprise features. All free, offline-first, and built with zero-cost APIs.</p>
+  <header class="app-header">
+    <a class="brand" href="./index.html"><div class="brand-logo">&#10013;</div><div class="brand-text"><span class="brand-title">SermonScribe v4</span><span class="brand-sub">Features</span></div></a>
+    <nav class="header-nav"><a href="./index.html">Home</a><a href="./about.html">About</a></nav>
+  </header>
+  <div class="features-page">
+    <h1 style="text-align:center;color:var(--accent);margin-bottom:2rem;">Complete Feature List</h1>
+    <p style="text-align:center;color:var(--text-muted);margin-bottom:2rem;">40+ enterprise features. Zero API cost. 100% free tools.</p>
 
-  <div class="card" style="margin-top:1rem"><div class="card-header">🎙️ Core Transcription</div><div class="card-body"><ul><li><strong>Real-time speech-to-text</strong> via Web Speech API in Chrome, Edge, Safari, Samsung Internet.</li><li><strong>Multi-language support</strong> (English NG/US/UK, Yoruba, Igbo, Hausa).</li><li><strong>Audio backup</strong> via MediaRecorder API (saves local WebM attachment).</li><li><strong>Continuous listening</strong> with auto-restart on timeout.</li><li><strong>Speaker labeling</strong> (Pastor, Guest, Bible Reader, Choir).</li><li><strong>Vibration feedback</strong> on start, pause, stop, and bookmarks.</li><li><strong>Wake Lock API</strong> keeps screen on during recording.</li><li><strong>Sermon timer</strong> with countdown alerts for pastors.</li><li><strong>Screen orientation lock</strong> for recording and presentation modes.</li></ul></div></div>
+    <div class="feature-section">
+      <h2>Core Transcription</h2>
+      <div class="feature-item"><h3>Real-time Speech-to-Text <span class="badge">Core</span></h3><p>Uses the browser's built-in Web Speech API to transcribe sermons as you speak. Supports 10+ languages.</p></div>
+      <div class="feature-item"><h3>Audio Recording <span class="badge">Core</span></h3><p>Records high-quality audio alongside transcription. Audio files stored locally and downloadable.</p></div>
+      <div class="feature-item"><h3>Pause and Resume <span class="badge">Core</span></h3><p>Pause transcription during interruptions and resume seamlessly. Timer continues tracking.</p></div>
+      <div class="feature-item"><h3>Speaker Labels <span class="badge">Core</span></h3><p>Automatically prefix transcribed text with speaker labels (Pastor, Minister, Evangelist, etc.).</p></div>
+      <div class="feature-item"><h3>Timestamped Bookmarks <span class="badge">Core</span></h3><p>Add bookmarks during recording with custom notes. Exportable as SRT subtitle files.</p></div>
+    </div>
 
-  <div class="card" style="margin-top:1rem"><div class="card-header">✝️ Bible Intelligence</div><div class="card-body"><ul><li><strong>Smart reference detection</strong> auto-identifies "John 3:16" style references.</li><li><strong>500+ curated verse database</strong> in KJV, NIV, ESV, NLT, AMP, MSG.</li><li><strong>Free Bible API fallback</strong> with IndexedDB caching for offline use.</li><li><strong>Verse autocomplete</strong> while typing references in the editor.</li><li><strong>One-click insertion</strong> of detected verses into sermon notes.</li><li><strong>Cross-reference linking</strong> between scripture and sermon content.</li></ul></div></div>
+    <div class="feature-section">
+      <h2>Bible Intelligence</h2>
+      <div class="feature-item"><h3>Auto Scripture Detection <span class="badge">Core</span></h3><p>Automatically detects Bible verse references in sermon text and displays them in the sidebar.</p></div>
+      <div class="feature-item"><h3>Verse Autocomplete <span class="badge">Core</span></h3><p>As you type a scripture reference, a dropdown appears with matching verses from the built-in Bible database.</p></div>
+      <div class="feature-item"><h3>Online Verse Fetching <span class="badge">Free</span></h3><p>Fetches full verse text from the free bible-api.com service. Results cached locally for offline use.</p></div>
+      <div class="feature-item"><h3>Flashcards for Memorization <span class="badge new">New</span></h3><p>Generates flashcards from detected scripture references. Click to reveal answers.</p></div>
+    </div>
 
-  <div class="card" style="margin-top:1rem"><div class="card-header">📝 Content Generation</div><div class="card-body"><ul><li><strong>Auto sermon outline</strong> generated from headings and paragraphs.</li><li><strong>Discussion questions</strong> based on themes and scriptures.</li><li><strong>5-day devotional guide</strong> exported as Markdown.</li><li><strong>Prayer request extractor</strong> finds prayer patterns in text.</li><li><strong>Social media quote clips</strong> with shareable WhatsApp links.</li><li><strong>Scripture flashcards</strong> with reveal-tap memory feature.</li><li><strong>Filler word removal</strong> (uh, um, like, you know) for clean transcripts.</li><li><strong>Reading level analysis</strong> (Flesch-Kincaid grade and ease).</li><li><strong>Word cloud visualization</strong> of sermon themes.</li><li><strong>Text-to-speech</strong> reads sermons aloud for accessibility.</li></ul></div></div>
+    <div class="feature-section">
+      <h2>Live Congregation Features</h2>
+      <div class="feature-item"><h3>Live Caption Broadcasting <span class="badge">Core</span></h3><p>Broadcast real-time sermon captions to other devices using the BroadcastChannel API.</p></div>
+      <div class="feature-item"><h3>QR Code Generation <span class="badge">Core</span></h3><p>Generate QR codes for congregation members to scan and access live captions.</p></div>
+    </div>
 
-  <div class="card" style="margin-top:1rem"><div class="card-header">📡 Live Congregation</div><div class="card-body"><ul><li><strong>BroadcastChannel + localStorage fallback</strong> for cross-tab live captions.</li><li><strong>QR code generation</strong> for congregation to open captions instantly.</li><li><strong>Shareable URL</strong> to open live.html on projectors or phones.</li><li><strong>Screen orientation lock</strong> for landscape projector mode.</li></ul></div></div>
+    <div class="feature-section">
+      <h2>Export and Share</h2>
+      <div class="feature-item"><h3>12 Export Formats <span class="badge">Core</span></h3><p>Export as: Plain Text, Markdown, HTML, Word, Print/PDF, Subtitles, Devotional, JSON, Podcast RSS, WhatsApp, Native Share, and Import.</p></div>
+      <div class="feature-item"><h3>Shareable URLs <span class="badge">Core</span></h3><p>Generate unique URLs for each sermon that can be shared via link or QR code.</p></div>
+      <div class="feature-item"><h3>Full Backup and Restore <span class="badge">Core</span></h3><p>Export all data as a single JSON file. Restore from backup at any time.</p></div>
+    </div>
 
-  <div class="card" style="margin-top:1rem"><div class="card-header">📝 Congregation Tools</div><div class="card-body"><ul><li><strong>Fill-in-the-blank notes</strong> for interactive sermon engagement.</li><li><strong>Digital bulletin builder</strong> with print-optimized layout.</li><li><strong>SOAP and BREAD devotional methods</strong> with structured journaling.</li><li><strong>Prayer wall</strong> for submitting and agreeing with prayer requests.</li><li><strong>Sermon evaluation rubric</strong> for pastoral feedback.</li></ul></div></div>
+    <div class="feature-section">
+      <h2>Content Repurposing</h2>
+      <div class="feature-item"><h3>Social Media Posts <span class="badge">Core</span></h3><p>Auto-generate Facebook, Twitter, and Instagram posts from sermon content with hashtags.</p></div>
+      <div class="feature-item"><h3>Blog Draft Generation <span class="badge">Core</span></h3><p>Create structured blog posts with introduction, key themes, main message, and reflection.</p></div>
+      <div class="feature-item"><h3>Newsletter Generation <span class="badge">Core</span></h3><p>Generate email newsletters with sermon summaries, key scriptures, and themes.</p></div>
+      <div class="feature-item"><h3>Sermon Outline Generator <span class="badge">Core</span></h3><p>Auto-generate structured sermon outlines with introduction, main points, and application.</p></div>
+      <div class="feature-item"><h3>Discussion Guide Generator <span class="badge">Core</span></h3><p>Create small group discussion guides with ice breakers, scripture study, and application questions.</p></div>
+    </div>
 
-  <div class="card" style="margin-top:1rem"><div class="card-header">📤 Export Suite</div><div class="card-body"><ul><li>TXT, Markdown, HTML, Word (.doc), Print/PDF, SRT subtitles, JSON.</li><li>5-Day Devotional Markdown, Podcast RSS feed.</li><li>WhatsApp share, Native Web Share, QR code shareable URLs.</li><li>Import from .txt and .md files.</li><li>Backup & restore as encrypted JSON archives.</li></ul></div></div>
+    <div class="feature-section">
+      <h2>Analytics and Insights</h2>
+      <div class="feature-item"><h3>Word Count and Readability <span class="badge">Core</span></h3><p>Real-time word count, sentence count, paragraph count, estimated read time, and Flesch-Kincaid grade level.</p></div>
+      <div class="feature-item"><h3>Theme Detection <span class="badge">Core</span></h3><p>Automatically identifies 18+ theological themes (Faith, Grace, Love, Holy Spirit, Prayer, etc.).</p></div>
+      <div class="feature-item"><h3>Prayer Request Extraction <span class="badge">Core</span></h3><p>Automatically detects and extracts prayer requests from sermon text.</p></div>
+      <div class="feature-item"><h3>Word Cloud Visualization <span class="badge">Core</span></h3><p>Visual representation of the most prominent themes in your sermon.</p></div>
+      <div class="feature-item"><h3>Analytics Dashboard <span class="badge new">New</span></h3><p>Comprehensive dashboard with total sermons, words, average duration, series count, top themes, and charts.</p></div>
+    </div>
 
-  <div class="card" style="margin-top:1rem"><div class="card-header">📊 Analytics & SEO</div><div class="card-body"><ul><li><strong>Client-side analytics</strong> dashboard with theme word clouds, preacher distribution, scripture rankings, sermon timeline.</li><li><strong>SEO meta tags, Open Graph, Twitter Cards, JSON-LD structured data.</strong></li><li><strong>sitemap.xml</strong> and <strong>robots.txt</strong> for search engine discoverability.</li><li><strong>Offline HTML fallback</strong> page for service worker cache.</li></ul></div></div>
+    <div class="feature-section">
+      <h2>Church Management</h2>
+      <div class="feature-item"><h3>Sermon Library <span class="badge">Core</span></h3><p>Organize sermons by date, title, preacher, series, and tags. Search with real-time filtering.</p></div>
+      <div class="feature-item"><h3>Sermon Series Management <span class="badge">Core</span></h3><p>Create and manage sermon series. Filter sermons by series.</p></div>
+      <div class="feature-item"><h3>Church Calendar <span class="badge new">New</span></h3><p>Plan and manage church events with date, time, description, and type.</p></div>
+      <div class="feature-item"><h3>Prayer Wall <span class="badge new">New</span></h3><p>Community prayer request submission with categories and prayer tracking.</p></div>
+      <div class="feature-item"><h3>Digital Bulletin <span class="badge new">New</span></h3><p>Create and manage weekly church bulletins with multiple sections.</p></div>
+      <div class="feature-item"><h3>Devotions Page <span class="badge new">New</span></h3><p>Generate and manage 5-day devotionals from sermons.</p></div>
+      <div class="feature-item"><h3>Notes Page <span class="badge new">New</span></h3><p>Take personal sermon notes linked to specific sermons.</p></div>
+      <div class="feature-item"><h3>Church Branding <span class="badge">Core</span></h3><p>Customize with church name, brand color, logo URL, and contact phone.</p></div>
+    </div>
 
-  <div class="card" style="margin-top:1rem"><div class="card-header">♿ Accessibility & Enterprise</div><div class="card-body"><ul><li><strong>High contrast mode</strong>, adjustable font size (12px–32px), keyboard-only navigation.</li><li><strong>Skip links, ARIA labels, focus traps, screen-reader announcements.</strong></li><li><strong>Dark/light mode</strong> with FOUC prevention.</li><li><strong>PWA installable</strong> on Android, iOS, Windows, macOS, Linux.</li><li><strong>Service Worker</strong> with cache-then-network strategy and offline fallback.</li><li><strong>IndexedDB storage</strong> for sermons, devotions, prayers, bulletins, notes, flashcards.</li><li><strong>Custom church branding</strong> (name, color, logo, phone).</li><li><strong>Keyboard shortcuts</strong> (Ctrl+S, Space, N, P, F, B, K).</li></ul></div></div>
-</main>
+    <div class="feature-section">
+      <h2>Accessibility</h2>
+      <div class="feature-item"><h3>Dark Mode <span class="badge">Core</span></h3><p>Toggle between light and dark themes. Preference persists across sessions.</p></div>
+      <div class="feature-item"><h3>High Contrast Mode <span class="badge">Core</span></h3><p>Enhanced contrast mode for visually impaired users.</p></div>
+      <div class="feature-item"><h3>Dyslexic-Friendly Font <span class="badge new">New</span></h3><p>Toggle to OpenDyslexic font for improved readability.</p></div>
+      <div class="feature-item"><h3>Reading Mode <span class="badge new">New</span></h3><p>Hide sidebars for focused, distraction-free reading.</p></div>
+      <div class="feature-item"><h3>Adjustable Font Size <span class="badge">Core</span></h3><p>Slider control to adjust font size from 12px to 24px.</p></div>
+      <div class="feature-item"><h3>Keyboard Navigation <span class="badge">Core</span></h3><p>Full keyboard shortcuts: Ctrl+S, Ctrl+Space, Ctrl+N, Ctrl+P, Ctrl+F, Ctrl+B, Ctrl+K, Ctrl+T.</p></div>
+      <div class="feature-item"><h3>Print-Optimized <span class="badge">Core</span></h3><p>Clean print output with sidebars and controls hidden.</p></div>
+    </div>
+
+    <div class="feature-section">
+      <h2>Utilities</h2>
+      <div class="feature-item"><h3>Sermon Timer <span class="badge">Core</span></h3><p>Countdown timer with configurable minutes. Vibration alert when time is up.</p></div>
+      <div class="feature-item"><h3>Text-to-Speech <span class="badge">Core</span></h3><p>Read sermon content aloud using the browser's SpeechSynthesis API.</p></div>
+      <div class="feature-item"><h3>Find and Replace <span class="badge">Core</span></h3><p>Search and replace text with optional regular expression support.</p></div>
+      <div class="feature-item"><h3>Filler Word Removal <span class="badge">Core</span></h3><p>Automatically remove filler words from transcribed text.</p></div>
+      <div class="feature-item"><h3>Auto-Punctuation <span class="badge new">New</span></h3><p>Automatically capitalize sentences and add periods to transcribed text.</p></div>
+      <div class="feature-item"><h3>Sermon Templates <span class="badge">Core</span></h3><p>Pre-built templates for Expository, Topical, Testimony, and Fill-in-the-Blank formats.</p></div>
+    </div>
+
+    <div class="feature-section">
+      <h2>Privacy and Security</h2>
+      <div class="feature-item"><h3>Zero Data Collection <span class="badge">Core</span></h3><p>No analytics, no tracking, no data sent to external servers.</p></div>
+      <div class="feature-item"><h3>Local-Only Storage <span class="badge">Core</span></h3><p>All data stored in browser IndexedDB. No cloud dependency.</p></div>
+    </div>
+  </div>
 </body>
 </html>

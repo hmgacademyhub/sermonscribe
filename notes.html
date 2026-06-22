@@ -1,84 +1,48 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="HMG SermonScribe v3 — Congregation fill-in-the-blank sermon notes. Interactive notes for church members.">
-<meta name="robots" content="index, follow">
-<meta name="theme-color" content="#0f172a">
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" type="image/svg+xml" href="./assets/images/icon-192.svg">
-<title>Congregation Notes — SermonScribe v3</title>
-<link rel="stylesheet" href="./assets/css/style.css">
-<style>
-.notes-page{max-width:800px;margin:2rem auto;padding:1rem}
-.fill-blank{display:inline-block;border-bottom:2px dashed var(--accent);min-width:120px;padding:0 .4rem;cursor:pointer;color:var(--text);background:transparent}
-.fill-blank:hover{background:var(--accent-glow)}
-.fill-blank.filled{border-bottom-style:solid;color:var(--accent);font-weight:700}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes - SermonScribe v4</title>
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <style>.note-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; }.note-card h3 { margin: 0 0 .5rem; }.note-card .meta { font-size: .8rem; color: var(--text-muted); margin-bottom: .5rem; }.note-card .content { white-space: pre-wrap; }</style>
 </head>
 <body>
-<header class="app-header" role="banner">
-  <a class="brand" href="./index.html">
-    <div class="brand-logo" aria-hidden="true">✝</div>
-    <div class="brand-text"><span class="brand-title">SermonScribe v3</span><span class="brand-sub">Congregation Notes</span></div>
-  </a>
-  <nav class="header-nav">
-    <a href="./index.html">Editor</a><a href="./live.html">Live</a><a href="./analytics.html">Analytics</a><a href="./devotions.html">Devotions</a><a href="./bulletin.html">Bulletin</a><a href="./prayer-wall.html">Prayer Wall</a>
-  </nav>
-</header>
-<main class="notes-page" role="main">
-  <h1>📝 Congregation Notes</h1>
-  <p>Create interactive fill-in-the-blank notes for your church members. Tap the blanks to type answers. Everything saves locally.</p>
-  <div class="card" style="margin-top:1rem">
-    <div class="card-body">
-      <div class="form-group"><label>Title</label><input type="text" id="note-title" placeholder="Sermon Title"></div>
-      <div class="form-group"><label>Date</label><input type="date" id="note-date"></div>
-      <div class="form-group"><label>Preacher</label><input type="text" id="note-preacher" placeholder="Pastor Name"></div>
-      <div class="form-group"><label>Notes Template</label>
-        <div id="note-editor" contenteditable="true" style="min-height:200px;border:1px solid var(--border);border-radius:8px;padding:1rem;background:var(--surface);color:var(--text)" role="textbox" aria-multiline="true">
-          <h2>Introduction</h2>
-          <p>Today we will learn about <span class="fill-blank" onclick="fill(this)">____</span>.</p>
-          <h2>Main Point 1</h2>
-          <p>The key scripture is <span class="fill-blank" onclick="fill(this)">____</span>.</p>
-          <h2>Main Point 2</h2>
-          <p>We must remember to <span class="fill-blank" onclick="fill(this)">____</span>.</p>
-          <h2>Conclusion</h2>
-          <p>My commitment this week is <span class="fill-blank" onclick="fill(this)">____</span>.</p>
-        </div>
-      </div>
-      <div style="display:flex;gap:.5rem;margin-top:.5rem">
-        <button class="btn btn-primary" onclick="saveNotes()">💾 Save Notes</button>
-        <button class="btn btn-ghost" onclick="printNotes()">🖨️ Print</button>
-        <button class="btn btn-ghost" onclick="addBlank()">➕ Add Blank</button>
-      </div>
-    </div>
-  </div>
-  <div id="saved-notes" style="margin-top:1rem"></div>
-</main>
-<script type="module">
-import { saveNote, loadNotesBySermon, deleteNote } from './assets/js/storage.js';
-import { generateId, getToday, createToast } from './assets/js/utils.js';
-
-window.fill = function(el) { const ans = prompt('Your answer:'); if (ans) { el.textContent = ans; el.classList.add('filled'); } };
-window.addBlank = function() { const sel = window.getSelection(); if (!sel.rangeCount) return; const span = document.createElement('span'); span.className = 'fill-blank'; span.textContent = '____'; span.onclick = function() { fill(this); }; sel.getRangeAt(0).insertNode(span); };
-
-async function saveNotes() {
-  const id = generateId();
-  const note = { id, title: document.getElementById('note-title').value || 'Untitled Notes', date: document.getElementById('note-date').value || getToday(), preacher: document.getElementById('note-preacher').value || '', content: document.getElementById('note-editor').innerHTML, createdAt: new Date().toISOString() };
-  await saveNote(note); createToast('Notes saved!', 'success'); loadSaved();
-}
-window.saveNotes = saveNotes;
-window.printNotes = function() { window.print(); };
-
-async function loadSaved() {
-  const el = document.getElementById('saved-notes');
-  const all = [];
-  try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith('hmg-notes-')) { try { all.push(JSON.parse(localStorage.getItem(k))); } catch {} } } } catch {}
-  if (!all.length) { el.innerHTML = ''; return; }
-  el.innerHTML = '<h2>Saved Notes</h2>' + all.map(n => `<div class="card" style="margin-top:.5rem"><div class="card-body"><strong>${n.title}</strong> <span style="color:var(--text-muted)">${n.date}</span><div style="margin-top:.5rem">${n.content}</div></div></div>`).join('');
-}
-loadSaved();
-</script>
+  <header class="app-header">
+    <a class="brand" href="./index.html"><div class="brand-logo">&#10013;</div><div class="brand-text"><span class="brand-title">SermonScribe v4</span><span class="brand-sub">Sermon Notes</span></div></a>
+    <nav class="header-nav"><a href="./index.html">Home</a><a href="./analytics.html">Analytics</a><a href="./devotions.html">Devotions</a></nav>
+  </header>
+  <main style="max-width:800px;margin:0 auto;padding:1rem;">
+    <h1>Personal Sermon Notes</h1>
+    <p>Take and organize notes from sermons you've attended.</p>
+    <button class="btn btn-primary" onclick="newNote()">+ New Note</button>
+    <div id="notes-container" style="margin-top:1rem;"></div>
+  </main>
+  <div id="note-modal" class="modal-overlay" aria-hidden="true"><div class="modal modal-lg">
+    <h2>New Sermon Note</h2>
+    <div class="form-group"><label for="note-sermon">Sermon Title</label><input type="text" id="note-sermon" placeholder="Which sermon is this for?"></div>
+    <div class="form-group"><label for="note-date">Date</label><input type="date" id="note-date"></div>
+    <div class="form-group"><label for="note-content">Notes</label><textarea id="note-content" rows="10" placeholder="Write your notes here..." style="width:100%;font-family:inherit;font-size:.95rem;padding:.55rem .75rem;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--surface);color:var(--text);resize:vertical"></textarea></div>
+    <div class="form-actions"><button class="btn btn-primary" onclick="saveNote()">Save</button><button class="btn btn-ghost" onclick="closeNoteModal()">Cancel</button></div>
+  </div></div>
+  <script type="module">
+    import { saveNote, loadNotesBySermon } from './assets/js/storage.js';
+    import { generateId, getTimestamp } from './assets/js/utils.js';
+    window.newNote = () => { document.getElementById('note-modal').classList.add('open'); document.getElementById('note-date').value = new Date().toISOString().split('T')[0]; };
+    window.closeNoteModal = () => { document.getElementById('note-modal').classList.remove('open'); document.getElementById('note-sermon').value = ''; document.getElementById('note-content').value = ''; };
+    window.saveNote = async () => {
+      const sermon = document.getElementById('note-sermon').value; const date = document.getElementById('note-date').value; const content = document.getElementById('note-content').value;
+      if (!sermon || !content) { alert('Please fill in sermon title and notes.'); return; }
+      await saveNote({ id: generateId(), sermonId: sermon, sermon, date, content, createdAt: getTimestamp() });
+      closeNoteModal(); loadNotes();
+    };
+    async function loadNotes() {
+      const container = document.getElementById('notes-container');
+      const notes = await loadNotesBySermon('');
+      if (!notes.length) { container.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:2rem;">No notes yet. Click "+ New Note" to start.</p>'; return; }
+      container.innerHTML = notes.map(n => `<div class="note-card"><h3>${n.sermon || 'Untitled'}</h3><div class="meta">${n.date} | ${new Date(n.createdAt).toLocaleString()}</div><div class="content">${n.content}</div></div>`).join('');
+    }
+    loadNotes();
+  </script>
 </body>
 </html>

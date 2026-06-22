@@ -1,97 +1,56 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="HMG SermonScribe v3 — Digital bulletin builder for churches. Create, save, and share church programs. Offline-first.">
-<meta name="robots" content="index, follow">
-<meta name="theme-color" content="#0f172a">
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" type="image/svg+xml" href="./assets/images/icon-192.svg">
-<title>Digital Bulletin — SermonScribe v3</title>
-<link rel="stylesheet" href="./assets/css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulletin - SermonScribe v4</title>
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <style>.bulletin-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem; }.bulletin-card h3 { margin: 0 0 .5rem; }.bulletin-card .meta { font-size: .8rem; color: var(--text-muted); margin-bottom: .5rem; }.bulletin-card .content { white-space: pre-wrap; }.section-header { background: var(--primary); color: #fff; padding: .5rem 1rem; border-radius: var(--radius-sm); margin: 1rem 0 .5rem; }</style>
 </head>
 <body>
-<header class="app-header" role="banner">
-  <a class="brand" href="./index.html">
-    <div class="brand-logo" aria-hidden="true">✝</div>
-    <div class="brand-text"><span class="brand-title">SermonScribe v3</span><span class="brand-sub">Bulletin</span></div>
-  </a>
-  <nav class="header-nav">
-    <a href="./index.html">Editor</a><a href="./live.html">Live</a><a href="./analytics.html">Analytics</a><a href="./notes.html">Notes</a><a href="./devotions.html">Devotions</a><a href="./prayer-wall.html">Prayer Wall</a>
-  </nav>
-</header>
-<main class="app-shell" style="padding:1rem;max-width:900px;margin:0 auto" role="main">
-  <h1>📰 Digital Bulletin Builder</h1>
-  <p>Create your church program digitally. Save for offline use, print for ushers, or share via QR.</p>
-
-  <div class="card" style="margin-top:1rem">
-    <div class="card-body">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-        <div class="form-group"><label>Church Name</label><input type="text" id="bul-church" placeholder="e.g. HMG Gospel Church"></div>
-        <div class="form-group"><label>Date</label><input type="date" id="bul-date"></div>
-      </div>
-      <div class="form-group"><label>Theme / Title</label><input type="text" id="bul-title" placeholder="e.g. Sunday of Breakthrough"></div>
-      <div class="form-group"><label>Order of Service</label><textarea id="bul-order" style="min-height:160px" placeholder="1. Opening Prayer
-2. Praise & Worship
-3. Scripture Reading
-4. Choir Ministration
-5. Sermon
-6. Offering
-7. Announcements
-8. Benediction"></textarea></div>
-      <div class="form-group"><label>Announcements</label><textarea id="bul-announcements" style="min-height:100px" placeholder="Enter announcements..."></textarea></div>
-      <div class="form-group"><label>Prayer Points</label><textarea id="bul-prayers" style="min-height:100px" placeholder="Enter prayer points..."></textarea></div>
-      <div style="display:flex;gap:.5rem;margin-top:1rem">
-        <button class="btn btn-primary" onclick="saveBulletin()">💾 Save Bulletin</button>
-        <button class="btn btn-ghost" onclick="printBulletin()">🖨️ Print</button>
-        <button class="btn btn-ghost" onclick="showSavedBulletins()">📚 Saved</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="bulletin-preview" style="margin-top:1rem"></div>
-  <div id="saved-bulletins" style="margin-top:1rem"></div>
-</main>
-
-<script type="module">
-import { saveBulletin as saveBul, loadBulletins, deleteBulletin } from './assets/js/storage.js';
-import { generateId, getToday, createToast, downloadBlob } from './assets/js/utils.js';
-
-document.getElementById('bul-date').value = new Date().toISOString().split('T')[0];
-
-window.saveBulletin = async function() {
-  const b = { id: generateId(), church: document.getElementById('bul-church').value, date: document.getElementById('bul-date').value, title: document.getElementById('bul-title').value, order: document.getElementById('bul-order').value, announcements: document.getElementById('bul-announcements').value, prayers: document.getElementById('bul-prayers').value, createdAt: new Date().toISOString() };
-  await saveBul(b); createToast('Bulletin saved!', 'success'); renderPreview(b); showSavedBulletins();
-};
-
-function renderPreview(b) {
-  const el = document.getElementById('bulletin-preview');
-  el.innerHTML = `<div class="bulletin-page" style="border:1px solid var(--border);border-radius:12px;padding:1.5rem;background:var(--surface);margin-top:1rem">
-    <h2 style="text-align:center;font-size:1.5rem;margin-bottom:.25rem">${b.church || 'Church Name'}</h2>
-    <p style="text-align:center;color:var(--text-muted);margin-bottom:1.5rem">${b.date} · ${b.title || 'Sunday Service'}</p>
-    <h3 style="border-bottom:1px solid var(--border);padding-bottom:.25rem;margin-bottom:.5rem">Order of Service</h3>
-    <div style="white-space:pre-wrap;line-height:1.8;margin-bottom:1rem">${b.order}</div>
-    <h3 style="border-bottom:1px solid var(--border);padding-bottom:.25rem;margin-bottom:.5rem">Announcements</h3>
-    <div style="white-space:pre-wrap;line-height:1.8;margin-bottom:1rem">${b.announcements}</div>
-    <h3 style="border-bottom:1px solid var(--border);padding-bottom:.25rem;margin-bottom:.5rem">Prayer Points</h3>
-    <div style="white-space:pre-wrap;line-height:1.8">${b.prayers}</div>
-  </div>`;
-}
-
-window.showSavedBulletins = async function() {
-  const container = document.getElementById('saved-bulletins');
-  const list = await loadBulletins();
-  if (!list.length) { container.innerHTML = '<p style="margin-top:1rem">No saved bulletins.</p>'; return; }
-  container.innerHTML = '<h2>Saved Bulletins</h2>' + list.map(b => `<div class="card" style="margin-top:.5rem"><div class="card-body"><strong>${b.title || 'Bulletin'}</strong> <span style="color:var(--text-muted)">${b.date}</span><div style="margin-top:.5rem"><button class="btn btn-ghost btn-sm" onclick="previewBulletin('${b.id}')">Preview</button><button class="btn btn-ghost btn-sm" onclick="deleteBulletinEntry('${b.id}')">Delete</button></div></div></div>`).join('');
-};
-
-window.previewBulletin = async function(id) {
-  const list = await loadBulletins(); const b = list.find(x => x.id === id); if (b) renderPreview(b);
-};
-
-window.deleteBulletinEntry = async function(id) { await deleteBulletin(id); showSavedBulletins(); createToast('Deleted.', 'info'); };
-window.printBulletin = function() { window.print(); };
-</script>
+  <header class="app-header">
+    <a class="brand" href="./index.html"><div class="brand-logo">&#10013;</div><div class="brand-text"><span class="brand-title">SermonScribe v4</span><span class="brand-sub">Church Bulletin</span></div></a>
+    <nav class="header-nav"><a href="./index.html">Home</a><a href="./analytics.html">Analytics</a><a href="./notes.html">Notes</a><a href="./devotions.html">Devotions</a></nav>
+  </header>
+  <main style="max-width:800px;margin:0 auto;padding:1rem;">
+    <h1>Weekly Church Bulletin</h1>
+    <p>Create and manage your church's weekly bulletin.</p>
+    <button class="btn btn-primary" onclick="openBulletinModal()">+ New Bulletin Entry</button>
+    <div id="bulletins-container" style="margin-top:1rem;"></div>
+  </main>
+  <div id="bulletin-modal" class="modal-overlay" aria-hidden="true"><div class="modal modal-lg">
+    <h2>New Bulletin Entry</h2>
+    <div class="form-group"><label for="bull-title">Title</label><input type="text" id="bull-title" placeholder="e.g., Sunday Service Announcement"></div>
+    <div class="form-group"><label for="bull-section">Section</label><select id="bull-section"><option value="announcements">Announcements</option><option value="events">Events</option><option value="prayer">Prayer Requests</option><option value="giving">Giving and Tithes</option><option value="welcome">Welcome</option><option value="sermon">Sermon Notes</option><option value="other">Other</option></select></div>
+    <div class="form-group"><label for="bull-date">Date</label><input type="date" id="bull-date"></div>
+    <div class="form-group"><label for="bull-content">Content</label><textarea id="bull-content" rows="6" placeholder="Bulletin content..." style="width:100%;font-family:inherit;font-size:.95rem;padding:.55rem .75rem;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--surface);color:var(--text);resize:vertical"></textarea></div>
+    <div class="form-actions"><button class="btn btn-primary" onclick="saveBulletin()">Save</button><button class="btn btn-ghost" onclick="closeBulletinModal()">Cancel</button></div>
+  </div></div>
+  <script type="module">
+    import { saveBulletin, loadBulletins, deleteBulletin } from './assets/js/storage.js';
+    import { generateId, getTimestamp, escapeHtml } from './assets/js/utils.js';
+    window.openBulletinModal = () => { document.getElementById('bulletin-modal').classList.add('open'); document.getElementById('bull-date').value = new Date().toISOString().split('T')[0]; };
+    window.closeBulletinModal = () => { document.getElementById('bulletin-modal').classList.remove('open'); document.getElementById('bull-title').value = ''; document.getElementById('bull-content').value = ''; };
+    window.saveBulletin = async () => {
+      const title = document.getElementById('bull-title').value; const section = document.getElementById('bull-section').value; const date = document.getElementById('bull-date').value; const content = document.getElementById('bull-content').value;
+      if (!title || !content) { alert('Please fill in title and content.'); return; }
+      await saveBulletin({ id: generateId(), title, section, date, content, createdAt: getTimestamp() });
+      closeBulletinModal(); loadBulletinsList();
+    };
+    async function loadBulletinsList() {
+      const container = document.getElementById('bulletins-container'); const bulletins = await loadBulletins(100);
+      if (!bulletins.length) { container.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--text-muted);">No bulletins yet.</p>'; return; }
+      const sections = {}; bulletins.forEach(b => { if (!sections[b.section]) sections[b.section] = []; sections[b.section].push(b); });
+      const sectionIcons = { announcements: 'Announcements', events: 'Events', prayer: 'Prayer Requests', giving: 'Giving and Tithes', welcome: 'Welcome', sermon: 'Sermon Notes', other: 'Other' };
+      let html = '';
+      for (const [section, items] of Object.entries(sections)) {
+        html += `<div class="section-header">${sectionIcons[section] || section}</div>`;
+        items.forEach(b => { html += `<div class="bulletin-card"><h3>${escapeHtml(b.title)}</h3><div class="meta">${b.date} | ${new Date(b.createdAt).toLocaleString()}</div><div class="content">${escapeHtml(b.content)}</div><button class="btn btn-sm btn-danger" style="margin-top:.5rem" onclick="window.deleteBull('${b.id}')">Delete</button></div>`; });
+      }
+      container.innerHTML = html;
+    }
+    window.deleteBull = async (id) => { if (!confirm('Delete this bulletin entry?')) return; await deleteBulletin(id); loadBulletinsList(); };
+    loadBulletinsList();
+  </script>
 </body>
 </html>

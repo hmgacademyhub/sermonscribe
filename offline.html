@@ -1,41 +1,18 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex">
-<title>Offline — SermonScribe v3</title>
-<link rel="manifest" href="./manifest.json">
-<style>
-:root{--primary:#0f172a;--accent:#d97706;--surface:#0f172a;--text:#f8fafc;--text-muted:#94a3b8;}
-*{box-sizing:border-box;margin:0}
-body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--primary);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;text-align:center;line-height:1.6}
-.card{background:#1e293b;border:1px solid #334155;border-radius:16px;padding:2rem;max-width:420px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.4)}
-.logo{width:64px;height:64px;margin:0 auto 1rem;border-radius:16px;background:var(--accent);display:grid;place-items:center;font-weight:800;font-size:28px;color:#0f172a}
-h1{font-size:1.25rem;margin-bottom:.5rem}
-p{color:var(--text-muted);margin-bottom:1.5rem;font-size:.95rem}
-.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.2rem;border-radius:10px;background:var(--accent);color:#0f172a;text-decoration:none;font-weight:700;border:0;cursor:pointer}
-.btn:hover{filter:brightness(1.1)}
-.cache-status{font-size:.8rem;color:var(--text-muted);margin-top:1rem}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You are Offline - SermonScribe v4</title>
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <style>body{display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:2rem}.offline-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:3rem;max-width:500px}.offline-card h1{font-size:3rem;margin:0 0 1rem}</style>
 </head>
 <body>
-<div class="card">
-  <div class="logo">✝</div>
-  <h1>You are offline</h1>
-  <p>SermonScribe v3 is unable to reach the network. Your previously saved sermons, devotions, and notes are still available.</p>
-  <a href="./index.html" class="btn">📖 Open Saved Sermons</a>
-  <div class="cache-status" id="cache-status">Checking cache status...</div>
-</div>
-<script>
-(async function(){
-  const el=document.getElementById('cache-status');
-  try{
-    const keys=await caches.keys();
-    const found=keys.find(k=>k.includes('hmg-sermonscribe'));
-    el.textContent=found?'App cache is ready. Your content works offline.':'No cache found. Connect once to enable offline mode.';
-  }catch(e){el.textContent='Offline mode status unavailable.';}
-})();
-</script>
+  <div class="offline-card">
+    <h1>&#128225;</h1>
+    <h2>You are Offline</h2>
+    <p>SermonScribe v4 works offline. You can still create and edit sermons. Your changes will sync when you reconnect.</p>
+    <button class="btn btn-primary" onclick="window.location.reload()">Try Again</button>
+  </div>
 </body>
 </html>

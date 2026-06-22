@@ -1,63 +1,38 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<meta name="description" content="HMG SermonScribe v3 — Live congregation caption display. Real-time sermon captions for projectors and mobile devices.">
-<meta name="robots" content="noindex">
-<meta name="theme-color" content="#000000">
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" type="image/svg+xml" href="./assets/images/icon-192.svg">
-<title>Live Captions — SermonScribe v3</title>
-<style>
-*{box-sizing:border-box;margin:0}
-html,body{height:100%;background:#000;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow:hidden}
-.live-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;text-align:center}
-.live-caption{font-size:clamp(2rem,6vw,5rem);line-height:1.4;max-width:90vw;word-break:break-word;font-weight:600}
-.live-meta{position:fixed;bottom:1rem;right:1rem;font-size:.9rem;opacity:.5}
-.header-bar{position:fixed;top:0;left:0;right:0;padding:.5rem 1rem;display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:10}
-.brand-sm{font-weight:700;color:var(--accent,#d97706);font-size:.9rem}
-#qr-btn{background:transparent;border:1px solid rgba(255,255,255,0.2);color:#fff;padding:.4rem .8rem;border-radius:8px;cursor:pointer;font-size:.85rem}
-#qr-btn:hover{background:rgba(255,255,255,0.1)}
-.qr-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;z-index:50}
-.qr-overlay.open{display:flex}
-.qr-box{background:#fff;color:#000;padding:1.5rem;border-radius:16px;text-align:center;max-width:90vw}
-.qr-box img{max-width:256px;border-radius:8px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Captions - SermonScribe v4</title>
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <style>
+    body { padding: 1rem; background: #000; color: #fff; font-size: 1.5rem; }
+    #live-caption { padding: 2rem; min-height: 60vh; background: #111; border-radius: 12px; margin-top: 1rem; white-space: pre-wrap; line-height: 1.8; }
+    .live-dot { display: inline-block; width: 12px; height: 12px; background: #dc2626; border-radius: 50%; animation: pulse 1s infinite; margin-right: .5rem; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+    #elapsed { font-size: 1.2rem; color: #94a3b8; }
+  </style>
 </head>
 <body>
-<div class="header-bar">
-  <div class="brand-sm">SermonScribe v3 — Live Captions</div>
-  <button id="qr-btn" onclick="toggleQR()">📡 QR Code</button>
-</div>
-<div class="live-stage">
-  <div class="live-caption" id="live-caption" aria-live="assertive">Waiting for live transcript...</div>
-  <div class="live-meta" id="live-meta">Not connected</div>
-</div>
-<div class="qr-overlay" id="qr-overlay" onclick="toggleQR()">
-  <div class="qr-box" onclick="event.stopPropagation()">
-    <h2 style="margin:0 0 .5rem">Join Live Captions</h2>
-    <p style="color:#555;margin:0 0 1rem;font-size:.9rem">Scan this QR code to open captions on your phone.</p>
-    <div id="qr-target"></div>
-    <p style="margin-top:.75rem;font-size:.8rem;color:#555">Or share this URL directly.</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 0;">
+    <div style="display:flex;align-items:center;gap:.5rem;"><span class="live-dot"></span><span style="font-weight:700;">Live Captions</span></div>
+    <span id="elapsed">0:00</span>
   </div>
-</div>
-<script type="module">
-import { initLivePage } from './assets/js/broadcast.js';
-initLivePage();
-
-const url = window.location.href;
-const qrTarget = document.getElementById('qr-target');
-function toggleQR() { document.getElementById('qr-overlay').classList.toggle('open'); }
-window.toggleQR = toggleQR;
-
-if (typeof QRCode !== 'undefined') {
-  QRCode.toDataURL(url, { width: 256, margin: 2, color: { dark: '#0f172a', light: '#ffffff' } }, (err, dataUrl) => {
-    if (!err) qrTarget.innerHTML = `<img src="${dataUrl}" alt="QR code for live captions">`;
-  });
-} else {
-  qrTarget.textContent = url;
-}
-</script>
+  <div id="live-caption">Waiting for transcription...</div>
+  <script>
+    const channel = new BroadcastChannel('sermonscribe-live');
+    const captionEl = document.getElementById('live-caption');
+    const elapsedEl = document.getElementById('elapsed');
+    let fullText = '';
+    channel.onmessage = (e) => {
+      if (e.data.type === 'transcript') {
+        fullText += e.data.text + ' ';
+        captionEl.textContent = fullText;
+        const mins = Math.floor(e.data.elapsed/60), secs = (e.data.elapsed%60).toString().padStart(2,'0');
+        elapsedEl.textContent = `${mins}:${secs}`;
+        captionEl.scrollTop = captionEl.scrollHeight;
+      }
+    };
+  </script>
 </body>
 </html>

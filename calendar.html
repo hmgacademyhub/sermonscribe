@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar - SermonScribe v4</title>
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <style>.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-top: 1rem; }.calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem; }.day-cell { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .5rem; min-height: 80px; cursor: pointer; }.day-cell:hover { border-color: var(--accent); }.day-cell.today { border-color: var(--accent); background: var(--accent-glow); }.day-cell .day-num { font-weight: 700; font-size: .9rem; margin-bottom: .25rem; }.day-cell .event { font-size: .7rem; padding: 2px 4px; background: var(--accent); color: #fff; border-radius: 3px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }.day-name { text-align: center; font-weight: 700; padding: .5rem; font-size: .8rem; color: var(--text-muted); }</style>
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="./index.html"><div class="brand-logo">&#10013;</div><div class="brand-text"><span class="brand-title">SermonScribe v4</span><span class="brand-sub">Church Calendar</span></div></a>
+    <nav class="header-nav"><a href="./index.html">Home</a><a href="./analytics.html">Analytics</a><a href="./notes.html">Notes</a><a href="./devotions.html">Devotions</a><a href="./bulletin.html">Bulletin</a><a href="./prayer-wall.html">Prayer Wall</a></nav>
+  </header>
+  <main style="max-width:1200px;margin:0 auto;padding:1rem;">
+    <div class="calendar-header">
+      <button class="btn btn-sm" onclick="changeMonth(-1)">Previous</button>
+      <h2 id="calendar-month-year"></h2>
+      <button class="btn btn-sm" onclick="changeMonth(1)">Next</button>
+    </div>
+    <button class="btn btn-primary" onclick="openEventModal()">+ Add Event</button>
+    <div class="calendar-grid" id="calendar-grid"></div>
+    <div id="events-list" style="margin-top:2rem;"></div>
+  </main>
+  <div id="event-modal" class="modal-overlay" aria-hidden="true"><div class="modal">
+    <h2>Add Church Event</h2>
+    <div class="form-group"><label for="event-title">Event Title</label><input type="text" id="event-title" placeholder="e.g., Sunday Service"></div>
+    <div class="form-group"><label for="event-date">Date</label><input type="date" id="event-date"></div>
+    <div class="form-group"><label for="event-time">Time</label><input type="time" id="event-time"></div>
+    <div class="form-group"><label for="event-desc">Description</label><textarea id="event-desc" rows="3" placeholder="Event details..." style="width:100%;font-family:inherit;font-size:.95rem;padding:.55rem .75rem;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--surface);color:var(--text);resize:vertical"></textarea></div>
+    <div class="form-group"><label for="event-type">Type</label><select id="event-type"><option value="service">Service</option><option value="prayer">Prayer Meeting</option><option value="fellowship">Fellowship</option><option value="conference">Conference</option><option value="youth">Youth Program</option><option value="special">Special Event</option></select></div>
+    <div class="form-actions"><button class="btn btn-primary" onclick="saveEvent()">Save</button><button class="btn btn-ghost" onclick="closeEventModal()">Cancel</button></div>
+  </div></div>
+  <script type="module">
+    import { saveEvent, loadEvents, deleteEvent } from './assets/js/storage.js';
+    import { generateId, getTimestamp, escapeHtml } from './assets/js/utils.js';
+    let currentDate = new Date(); let allEvents = [];
+    const typeIcons = { service: 'S', prayer: 'P', fellowship: 'F', conference: 'C', youth: 'Y', special: 'E' };
+    window.openEventModal = () => { document.getElementById('event-modal').classList.add('open'); document.getElementById('event-date').value = currentDate.toISOString().split('T')[0]; };
+    window.closeEventModal = () => document.getElementById('event-modal').classList.remove('open');
+    window.saveEvent = async () => {
+      const title = document.getElementById('event-title').value; const date = document.getElementById('event-date').value; const time = document.getElementById('event-time').value; const desc = document.getElementById('event-desc').value; const type = document.getElementById('event-type').value;
+      if (!title || !date) { alert('Please fill in title and date.'); return; }
+      await saveEvent({ id: generateId(), title, date, time, desc, type, createdAt: getTimestamp() });
+      closeEventModal(); loadCalendar();
+    };
+    window.changeMonth = (delta) => { currentDate.setMonth(currentDate.getMonth() + delta); renderCalendar(); };
+    async function loadCalendar() { allEvents = await loadEvents(); renderCalendar(); }
+    function renderCalendar() {
+      const year = currentDate.getFullYear(); const month = currentDate.getMonth();
+      const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      document.getElementById('calendar-month-year').textContent = `${monthNames[month]} ${year}`;
+      const grid = document.getElementById('calendar-grid'); const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      let html = dayNames.map(d => `<div class="day-name">${d}</div>`).join('');
+      const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate(); const today = new Date();
+      for (let i = 0; i < firstDay; i++) html += '<div class="day-cell" style="opacity:.3;pointer-events:none"></div>';
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
+        const dayEvents = allEvents.filter(e => e.date === dateStr);
+        html += `<div class="day-cell ${isToday ? 'today' : ''}" onclick="window.showDayEvents('${dateStr}')"><div class="day-num">${day}</div>${dayEvents.slice(0,3).map(e => `<div class="event">${typeIcons[e.type] || ''} ${escapeHtml(e.title)}</div>`).join('')}${dayEvents.length > 3 ? `<div class="event">+${dayEvents.length - 3} more</div>` : ''}</div>`;
+      }
+      grid.innerHTML = html; renderEventsList();
+    }
+    function renderEventsList() {
+      const container = document.getElementById('events-list');
+      const upcoming = allEvents.filter(e => new Date(e.date) >= new Date(new Date().toDateString())).sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 10);
+      if (!upcoming.length) { container.innerHTML = '<p style="text-align:center;padding:1rem;color:var(--text-muted);">No upcoming events.</p>'; return; }
+      container.innerHTML = '<h3>Upcoming Events</h3>' + upcoming.map(e => `<div class="card" style="margin-bottom:.5rem;padding:1rem;"><div style="display:flex;justify-content:space-between;align-items:center;"><div><strong>${typeIcons[e.type] || ''} ${escapeHtml(e.title)}</strong><br><small style="color:var(--text-muted);">${e.date}${e.time ? ' | ' + e.time : ''}</small>${e.desc ? '<br>' + escapeHtml(e.desc) : ''}</div><button class="btn btn-sm btn-danger" onclick="window.deleteEv('${e.id}')">Delete</button></div></div>`).join('');
+    }
+    window.showDayEvents = (dateStr) => { const dayEvents = allEvents.filter(e => e.date === dateStr); if (!dayEvents.length) return; alert(`Events on ${dateStr}:\n\n${dayEvents.map(e => `${typeIcons[e.type] || ''} ${e.title}${e.time ? ' at ' + e.time : ''}`).join('\n')}`); };
+    window.deleteEv = async (id) => { if (!confirm('Delete this event?')) return; await deleteEvent(id); loadCalendar(); };
+    loadCalendar();
+  </script>
+</body>
+</html>

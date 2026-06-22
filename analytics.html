@@ -1,71 +1,94 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="HMG SermonScribe v3 — Church analytics dashboard. Sermon statistics, theme clouds, scripture rankings, and preaching insights.">
-<meta name="robots" content="index, follow">
-<meta name="theme-color" content="#0f172a">
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" type="image/svg+xml" href="./assets/images/icon-192.svg">
-<title>Analytics Dashboard — SermonScribe v3</title>
-<link rel="stylesheet" href="./assets/css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics - SermonScribe v4</title>
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <style>
+    .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; text-align: center; }
+    .stat-card .stat-value { font-size: 2.5rem; font-weight: 800; color: var(--accent); }
+    .stat-card .stat-label { font-size: .85rem; color: var(--text-muted); margin-top: .25rem; }
+    .chart-container { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin: 1rem 0; }
+    canvas { max-width: 100%; }
+  </style>
 </head>
 <body>
-<header class="app-header" role="banner">
-  <a class="brand" href="./index.html">
-    <div class="brand-logo" aria-hidden="true">✝</div>
-    <div class="brand-text"><span class="brand-title">SermonScribe v3</span><span class="brand-sub">Analytics</span></div>
-  </a>
-  <nav class="header-nav">
-    <a href="./index.html">Editor</a><a href="./live.html">Live</a><a href="./notes.html">Notes</a><a href="./devotions.html">Devotions</a><a href="./bulletin.html">Bulletin</a><a href="./prayer-wall.html">Prayer Wall</a>
-  </nav>
-</header>
-<main class="app-shell" style="padding:1rem" role="main">
-  <div style="flex:1">
-    <h1 style="margin:0 0 1rem">📊 Church Analytics</h1>
-    <div class="stat-grid" style="margin-bottom:1rem">
-      <div class="stat-card"><div class="stat-value" id="stat-sermon-count">0</div><div class="stat-label">Sermons</div></div>
-      <div class="stat-card"><div class="stat-value" id="stat-total-words">0</div><div class="stat-label">Total Words</div></div>
-      <div class="stat-card"><div class="stat-value" id="stat-total-hours">0</div><div class="stat-label">Hours Recorded</div></div>
-      <div class="stat-card"><div class="stat-value" id="stat-series-count">0</div><div class="stat-label">Series</div></div>
-      <div class="stat-card"><div class="stat-value" id="stat-flashcards">0</div><div class="stat-label">Flashcards</div></div>
-      <div class="stat-card"><div class="stat-value" id="stat-devotions">0</div><div class="stat-label">Devotions</div></div>
-      <div class="stat-card"><div class="stat-value" id="stat-prayers">0</div><div class="stat-label">Prayers</div></div>
-      <div class="stat-card"><div class="stat-value" id="stat-bulletins">0</div><div class="stat-label">Bulletins</div></div>
+  <header class="app-header">
+    <a class="brand" href="./index.html"><div class="brand-logo">&#10013;</div><div class="brand-text"><span class="brand-title">SermonScribe v4</span><span class="brand-sub">Analytics Dashboard</span></div></a>
+    <nav class="header-nav"><a href="./index.html">Home</a><a href="./notes.html">Notes</a><a href="./devotions.html">Devotions</a></nav>
+  </header>
+  <main style="max-width:1200px;margin:0 auto;padding:1rem;">
+    <h1>Analytics</h1>
+    <div class="analytics-grid">
+      <div class="stat-card"><div class="stat-value" id="total-sermons">0</div><div class="stat-label">Total Sermons</div></div>
+      <div class="stat-card"><div class="stat-value" id="total-words">0</div><div class="stat-label">Total Words</div></div>
+      <div class="stat-card"><div class="stat-value" id="avg-duration">0:00</div><div class="stat-label">Avg Duration</div></div>
+      <div class="stat-card"><div class="stat-value" id="total-series">0</div><div class="stat-label">Sermon Series</div></div>
+      <div class="stat-card"><div class="stat-value" id="top-theme">-</div><div class="stat-label">Top Theme</div></div>
+      <div class="stat-card"><div class="stat-value" id="top-preacher">-</div><div class="stat-label">Most Active Preacher</div></div>
     </div>
-
-    <div class="card" style="margin-bottom:1rem">
-      <div class="card-header">☁️ Theme Word Cloud</div>
-      <div class="card-body"><canvas id="word-cloud" class="word-cloud-canvas"></canvas></div>
-    </div>
-
-    <div class="card" style="margin-bottom:1rem">
-      <div class="card-header">🎤 Preacher Distribution</div>
-      <div class="card-body"><canvas id="preacher-chart" style="width:100%;height:260px"></canvas></div>
-    </div>
-
-    <div class="card" style="margin-bottom:1rem">
-      <div class="card-header">📖 Scripture Rankings</div>
-      <div class="card-body"><canvas id="verse-chart" style="width:100%;height:260px"></canvas></div>
-    </div>
-
-    <div class="card" style="margin-bottom:1rem">
-      <div class="card-header">📅 Sermon Timeline</div>
-      <div class="card-body"><canvas id="timeline-chart" style="width:100%;height:260px"></canvas></div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">📋 Sermon Details</div>
-      <div class="card-body" style="overflow-x:auto">
-        <table style="width:100%;border-collapse:collapse;font-size:.9rem">
-          <thead><tr style="border-bottom:2px solid var(--border)"><th style="text-align:left;padding:.5rem">Title</th><th style="text-align:left;padding:.5rem">Preacher</th><th style="text-align:left;padding:.5rem">Date</th><th style="text-align:left;padding:.5rem">Words</th><th style="text-align:left;padding:.5rem">Grade</th><th style="text-align:left;padding:.5rem">Duration</th></tr></thead>
-          <tbody id="sermon-table"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</main>
-<script type="module">import { renderDashboard } from './assets/js/analytics.js'; renderDashboard();</script>
+    <div class="chart-container"><h3>Sermons Over Time</h3><canvas id="sermons-chart" height="200"></canvas></div>
+    <div class="chart-container"><h3>Theme Distribution</h3><canvas id="themes-chart" height="200"></canvas></div>
+    <div class="chart-container"><h3>Most Referenced Scriptures</h3><div id="top-verses"></div></div>
+  </main>
+  <script type="module">
+    import { loadSermons, getAllSeries } from './assets/js/storage.js';
+    import { getKeywords, wordCount, stripHtml, escapeHtml } from './assets/js/utils.js';
+    async function init() {
+      const sermons = await loadSermons(1000);
+      const series = await getAllSeries();
+      document.getElementById('total-sermons').textContent = sermons.length;
+      document.getElementById('total-series').textContent = series.length;
+      let totalWords = 0, totalTime = 0;
+      const themeCounts = {}, preacherCounts = {}, verseCounts = {}, monthlyCounts = {};
+      sermons.forEach(s => {
+        const text = stripHtml(s.content || '');
+        totalWords += wordCount(text);
+        const durParts = (s.duration || '0:00').split(':');
+        totalTime += (parseInt(durParts[0]) || 0) * 60 + (parseInt(durParts[1]) || 0);
+        const themes = getKeywords(text);
+        themes.forEach(t => { themeCounts[t] = (themeCounts[t] || 0) + 1; });
+        const preacher = s.preacher || 'Unknown';
+        preacherCounts[preacher] = (preacherCounts[preacher] || 0) + 1;
+        (s.verses || []).forEach(v => { const ref = v.ref || v; verseCounts[ref] = (verseCounts[ref] || 0) + 1; });
+        const month = (s.date || '').slice(0, 7);
+        if (month) monthlyCounts[month] = (monthlyCounts[month] || 0) + 1;
+      });
+      document.getElementById('total-words').textContent = totalWords.toLocaleString();
+      const avgMin = sermons.length ? Math.floor(totalTime / sermons.length / 60) : 0;
+      const avgSec = sermons.length ? Math.floor((totalTime / sermons.length) % 60) : 0;
+      document.getElementById('avg-duration').textContent = `${avgMin}:${avgSec.toString().padStart(2, '0')}`;
+      const topTheme = Object.entries(themeCounts).sort((a, b) => b[1] - a[1])[0];
+      if (topTheme) document.getElementById('top-theme').textContent = topTheme[0];
+      const topPreacher = Object.entries(preacherCounts).sort((a, b) => b[1] - a[1])[0];
+      if (topPreacher) document.getElementById('top-preacher').textContent = topPreacher[0];
+      const topVerses = Object.entries(verseCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+      document.getElementById('top-verses').innerHTML = topVerses.map(([ref, count]) =>
+        `<div style="padding:.5rem 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;"><span>${escapeHtml(ref)}</span><span style="color:var(--accent);font-weight:600">${count}x</span></div>`
+      ).join('') || '<p>No verses detected yet.</p>';
+      drawMonthlyChart(monthlyCounts); drawThemeChart(themeCounts);
+    }
+    function drawMonthlyChart(data) {
+      const canvas = document.getElementById('sermons-chart'); if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const months = Object.keys(data).sort(); const values = months.map(m => data[m]);
+      if (!values.length) return;
+      const max = Math.max(...values, 1); const w = canvas.width = canvas.offsetWidth * 2; const h = canvas.height = 200 * 2;
+      ctx.scale(2, 2); const barW = Math.max(10, (canvas.offsetWidth - 40) / months.length - 5); const chartH = 150;
+      months.forEach((m, i) => { const x = 20 + i * (barW + 5); const barH = (values[i] / max) * chartH; ctx.fillStyle = '#d97706'; ctx.fillRect(x, chartH - barH + 20, barW, barH); ctx.fillStyle = '#64748b'; ctx.font = '8px sans-serif'; ctx.fillText(m.slice(2), x, chartH + 35); ctx.fillStyle = '#1e293b'; ctx.font = 'bold 10px sans-serif'; ctx.fillText(values[i], x + barW / 2 - 4, chartH - barH + 15); });
+    }
+    function drawThemeChart(data) {
+      const canvas = document.getElementById('themes-chart'); if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const themes = Object.entries(data).sort((a, b) => b[1] - a[1]).slice(0, 8);
+      if (!themes.length) return;
+      const max = Math.max(...themes.map(t => t[1]), 1); const w = canvas.width = canvas.offsetWidth * 2; const h = canvas.height = 200 * 2;
+      ctx.scale(2, 2); const barH = 14; const colors = ['#d97706','#2563eb','#059669','#dc2626','#7c3aed','#0f172a','#ea580c','#0891b2'];
+      themes.forEach(([theme, count], i) => { const y = 20 + i * 22; const bW = (count / max) * (canvas.offsetWidth - 140); ctx.fillStyle = colors[i % colors.length]; ctx.fillRect(80, y, bW, barH); ctx.fillStyle = '#1e293b'; ctx.font = '10px sans-serif'; ctx.fillText(theme, 5, y + 11); ctx.fillText(count.toString(), 85 + bW, y + 11); });
+    }
+    init();
+  </script>
 </body>
 </html>

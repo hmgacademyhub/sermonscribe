@@ -1,372 +1,193 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<meta name="description" content="HMG SermonScribe v3 — Real-time sermon transcription, offline-first notes, live congregation captions, Bible intelligence, devotions, and church analytics. Zero API cost. Enterprise-grade. Built by HMG Gospel.">
-<meta name="keywords" content="sermon transcription,church notes,bible verses,sermon outline,sermon analytics,faithtech,offline sermon notes,congregation captions,prayer wall,digital bulletin">
-<meta name="author" content="Adewale Samson Adeagbo, HMG Concepts">
-<meta name="robots" content="index, follow">
-<meta name="theme-color" content="#0f172a">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="SermonScribe v3">
-<meta name="msapplication-TileColor" content="#0f172a">
-<meta name="msapplication-config" content="none">
-<meta property="og:title" content="HMG SermonScribe v3 — Real-Time Sermon Transcription & Church Intelligence">
-<meta property="og:description" content="Enterprise-grade, offline-first sermon transcription, live captions, Bible intelligence, devotions, and church analytics. Zero API cost.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://hmgacademyhub.github.io/sermonscribe/index.html">
-<meta property="og:image" content="./assets/images/social-preview.jpg">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="HMG SermonScribe v3">
-<meta name="twitter:description" content="Real-time sermon transcription, offline-first notes, live congregation captions, Bible intelligence, and church analytics.">
-<meta name="twitter:image" content="./assets/images/social-preview.jpg">
-<link rel="canonical" href="https://hmgacademyhub.github.io/sermonscribe/index.html">
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" type="image/svg+xml" href="./assets/images/icon-192.svg">
-<link rel="apple-touch-icon" href="./assets/images/icon-192.svg">
-<title>HMG SermonScribe v3 — Real-Time Sermon Transcription & Church Intelligence</title>
-<link rel="stylesheet" href="./assets/css/style.css">
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" defer></script>
-<script type="module" src="./assets/js/app.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="description" content="HMG SermonScribe v4 - Real-time sermon transcription, offline-first notes, live congregation captions, Bible intelligence, devotions, and church analytics. Zero API cost.">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="SermonScribe v4">
+  <meta property="og:title" content="HMG SermonScribe v4">
+  <meta property="og:description" content="Enterprise-grade, offline-first sermon transcription. Zero API cost.">
+  <meta property="og:type" content="website">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/svg+xml" href="./assets/images/icon-192.svg">
+  <title>HMG SermonScribe v4</title>
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" defer></script>
+  <script type="module" src="./assets/js/app.js"></script>
 </head>
 <body>
 <a href="#main-content" class="skip-link">Skip to main content</a>
-
-<header class="app-header" role="banner">
-  <a class="brand" href="./index.html" aria-label="SermonScribe Home">
-    <div class="brand-logo" aria-hidden="true">✝</div>
-    <div class="brand-text">
-      <span class="brand-title" id="brand-title">SermonScribe v3</span>
-      <span class="brand-sub">HMG Gospel · Offline-First · Zero API Cost</span>
-    </div>
-  </a>
-  <nav class="header-nav" role="navigation" aria-label="Primary">
-    <button id="menu-toggle" class="icon-btn" aria-label="Toggle menu">☰</button>
-    <a href="./live.html" class="btn-live btn-sm" target="_blank">📡 Live</a>
-    <a href="./analytics.html">📊 Analytics</a>
-    <a href="./notes.html">📝 Notes</a>
-    <a href="./devotions.html">🙏 Devotions</a>
-    <a href="./bulletin.html">📰 Bulletin</a>
-    <a href="./prayer-wall.html">🛐 Prayer Wall</a>
+<header class="app-header">
+  <a class="brand" href="./index.html"><div class="brand-logo">&#10013;</div><div class="brand-text"><span class="brand-title" id="brand-title">SermonScribe v4</span><span class="brand-sub">HMG Gospel &#183; Offline-First &#183; Zero API Cost</span></div></a>
+  <nav class="header-nav">
+    <button id="menu-toggle" class="icon-btn" aria-label="Toggle menu">&#9776;</button>
+    <a href="./live.html" target="_blank" rel="noopener">&#128225; Live</a>
+    <a href="./analytics.html">&#128202; Analytics</a>
+    <a href="./notes.html">&#128221; Notes</a>
+    <a href="./devotions.html">&#128591; Devotions</a>
+    <a href="./bulletin.html">&#128240; Bulletin</a>
+    <a href="./prayer-wall.html">&#128736; Prayer Wall</a>
+    <a href="./calendar.html">&#128197; Calendar</a>
+    <a href="./features.html">Features</a>
     <a href="./about.html">About</a>
-    <button class="icon-btn" id="theme-toggle" aria-label="Toggle dark mode">🌓</button>
+    <button class="icon-btn" id="theme-toggle" aria-label="Toggle dark mode">&#127763;</button>
   </nav>
 </header>
-
-<div id="sidebar-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:44" onclick="document.getElementById('sidebar').classList.remove('open')"></div>
-<div class="app-shell" id="app-shell">
-  <aside class="sidebar" id="sidebar" role="complementary" aria-label="Sermon library">
-    <div class="sidebar-header">
-      <span class="sidebar-title">📚 Sermons</span>
-      <button class="btn btn-sm btn-primary" onclick="newSermon()">+ New</button>
-    </div>
-    <div class="sidebar-body">
-      <div class="form-group">
-        <input type="search" id="search-input" placeholder="Search sermons, preachers, series..." aria-label="Search sermons">
-      </div>
-      <div id="sermon-list" role="list" aria-label="Sermon list"></div>
-    </div>
-    <div class="sidebar-footer">
-      <button class="btn btn-ghost btn-sm btn-block" onclick="openBackup()">💾 Backup</button>
-      <button class="btn btn-ghost btn-sm btn-block" onclick="openSettings()">⚙️ Settings</button>
-      <button class="btn btn-ghost btn-sm btn-block" onclick="openChurchBranding()">🏛 Branding</button>
-      <button class="btn btn-ghost btn-sm btn-block" onclick="openSermonTimer()">⏱️ Sermon Timer</button>
-      <div style="margin-top:.5rem;font-size:.7rem">v3.0.0 · HMG Concepts</div>
-    </div>
-  </aside>
-
-  <main class="main-stage" id="main-content" role="main" aria-label="Sermon editor">
-    <div class="card" style="display:flex;flex-direction:column;flex:1;min-height:0">
-      <div class="toolbar" role="toolbar" aria-label="Formatting">
-        <button class="tool-btn" onclick="formatDoc('bold')" title="Bold" aria-label="Bold">𝐁</button>
-        <button class="tool-btn" onclick="formatDoc('italic')" title="Italic" aria-label="Italic">𝑰</button>
-        <button class="tool-btn" onclick="formatDoc('underline')" title="Underline" aria-label="Underline">U̲</button>
-        <button class="tool-btn" onclick="formatDoc('strikeThrough')" title="Strikethrough" aria-label="Strikethrough">S̶</button>
-        <span class="divider"></span>
-        <button class="tool-btn" onclick="formatDoc('insertUnorderedList')" title="Bullet list" aria-label="Bullet list">•</button>
-        <button class="tool-btn" onclick="formatDoc('insertOrderedList')" title="Numbered list" aria-label="Numbered list">1.</button>
-        <button class="tool-btn" onclick="formatDoc('formatBlock','H2')" title="Heading 2" aria-label="Heading 2">H2</button>
-        <button class="tool-btn" onclick="formatDoc('formatBlock','H3')" title="Heading 3" aria-label="Heading 3">H3</button>
-        <button class="tool-btn" onclick="formatDoc('formatBlock','blockquote')" title="Quote" aria-label="Quote">❝</button>
-        <span class="divider"></span>
-        <button class="tool-btn" onclick="insertTemplate('expository')" title="Expository template" aria-label="Expository template">📋 Exp</button>
-        <button class="tool-btn" onclick="insertTemplate('topical')" title="Topical template" aria-label="Topical template">📋 Top</button>
-        <button class="tool-btn" onclick="insertTemplate('testimony')" title="Testimony template" aria-label="Testimony template">📋 Tst</button>
-        <span class="divider"></span>
-        <button class="tool-btn" onclick="addBookmark()" title="Add bookmark" aria-label="Add bookmark">🔖</button>
-        <button class="tool-btn" onclick="openFindReplace()" title="Find & replace" aria-label="Find and replace">🔍</button>
-        <button class="tool-btn" onclick="openFillerRemoval()" title="Remove filler words" aria-label="Remove filler words">✂️</button>
-        <button class="tool-btn" onclick="speakText()" title="Read aloud" aria-label="Read aloud">📽️</button>
-        <button class="tool-btn" onclick="stopSpeak()" title="Stop reading" aria-label="Stop reading">🛑</button>
-        <span class="divider"></span>
-        <button class="tool-btn" onclick="openSettings()" title="Settings" aria-label="Settings">⚙️</button>
-      </div>
-
-      <div class="record-hud" id="record-hud" role="status" aria-live="polite">
-        <div class="pulse" aria-hidden="true"></div>
-        <div id="record-time" style="font-variant-numeric:tabular-nums;font-weight:800">0:00</div>
-        <div id="record-status" style="font-size:.9rem">Listening...</div>
-      </div>
-
-      <div class="editor-wrap" id="editor-wrap">
-        <input class="editor-title-input" id="sermon-title" placeholder="Sermon Title" aria-label="Sermon title">
-        <div class="sermon-editor" id="editor" contenteditable="true" aria-label="Sermon content editor" role="textbox" aria-multiline="true"></div>
-      </div>
-      <div id="audio-attachment"></div>
-      <div class="status-bar" id="status-bar" role="status">
-        <div style="display:flex;gap:1rem;flex-wrap:wrap">
-          <span id="word-count">0 words</span>
-          <span id="sentence-count">0 sentences</span>
-          <span id="paragraph-count">0 paragraphs</span>
-          <span id="read-time">~0 min read</span>
-          <span id="grade-level">Grade 0</span>
-          <span id="last-saved">Not saved yet</span>
-        </div>
-        <div style="display:flex;gap:.5rem">
-          <button class="btn btn-sm btn-live" onclick="openLiveCaption()">📡 Live</button>
-          <button class="btn btn-sm btn-success" onclick="openShare()">🔗 Share</button>
-          <button class="btn btn-sm btn-primary" onclick="openExport()">📤 Export</button>
-          <button class="btn btn-sm btn-danger" onclick="deleteCurrentSermon()">🗑️ Delete</button>
-        </div>
-      </div>
-    </div>
-
-    <div style="display:flex;gap:1rem;flex-wrap:wrap">
-      <button class="btn btn-primary btn-block" id="record-btn" onclick="toggleRecording()" style="flex:1;min-width:180px">🎙️ Start Recording</button>
-      <button class="btn btn-ghost" id="pause-btn" onclick="togglePauseRecording()" style="display:none">⏸ Pause</button>
-      <button class="btn btn-ghost" onclick="openPresent()">📺 Present</button>
-      <button class="btn btn-ghost" onclick="openWordCloud()">☁️ Word Cloud</button>
-      <button class="btn btn-ghost" onclick="openOutlineGenerator()">📝 Outline</button>
-      <button class="btn btn-ghost" onclick="openDiscussionGenerator()">💬 Discussion</button>
-      <button class="btn btn-ghost" onclick="openFlashcards()">🎴 Flashcards</button>
-      <button class="btn btn-primary" onclick="openRepurposer()">🚀 Repurpose</button>
-    </div>
-  </main>
-
-  <aside class="right-panel" role="complementary" aria-label="Bible and tools">
-    <div style="position:sticky;top:0">
-      <div class="card">
-        <div class="card-header">📖 Bible Panel</div>
-        <div class="panel-tabs" role="tablist">
-          <button class="panel-tab active" data-tab="detected" onclick="setBibleTab('detected')" role="tab" aria-selected="true">Detected</button>
-          <button class="panel-tab" data-tab="common" onclick="setBibleTab('common')" role="tab" aria-selected="false">Common</button>
-          <button class="panel-tab" data-tab="search" onclick="setBibleTab('search')" role="tab" aria-selected="false">Search</button>
-        </div>
-        <div class="panel-body" id="bible-panel" role="tabpanel"></div>
-      </div>
-      <div class="card" style="margin-top:1rem">
-        <div class="card-header">🏷️ Themes</div>
-        <div class="panel-body" id="keyword-panel"></div>
-      </div>
-      <div class="card" style="margin-top:1rem">
-        <div class="card-header">🙏 Prayers</div>
-        <div class="panel-body" id="prayer-panel"></div>
-      </div>
-      <div class="card" style="margin-top:1rem">
-        <div class="card-header">💬 Quotes</div>
-        <div class="panel-body" id="quote-panel"></div>
-      </div>
-      <div class="card" style="margin-top:1rem">
-        <div class="card-header">🔖 Bookmarks</div>
-        <div class="panel-body" id="bookmark-panel"></div>
-      </div>
-      <div class="card" style="margin-top:1rem">
-        <div class="card-header">📂 Series</div>
-        <div class="panel-body">
-          <select id="series-select" class="form-group" style="margin:0"><option value="">No Series</option></select>
-        </div>
-      </div>
-      <div class="card" style="margin-top:1rem">
-        <div class="card-header">♿ Accessibility</div>
-        <div class="panel-body" style="font-size:.85rem">
-          <label>Font Size</label>
-          <input type="range" id="font-size-slider" min="12" max="32" value="16" style="width:100%">
-          <label style="margin-top:.5rem">High Contrast</label>
-          <input type="checkbox" id="high-contrast-toggle" style="width:auto">
-          <label style="margin-top:.5rem">Dyslexic Font</label>
-          <input type="checkbox" id="dyslexic-font-toggle" style="width:auto">
-          <label style="margin-top:.5rem">Reading Mode</label>
-          <input type="checkbox" id="reading-mode-toggle" style="width:auto">
-          <label style="margin-top:.5rem">Translation</label>
-          <select id="translation-select" style="width:100%"><option value="kjv">KJV</option><option value="niv">NIV</option><option value="esv">ESV</option><option value="nlt">NLT</option><option value="amp">AMP</option><option value="msg">MSG</option></select>
-        </div>
-      </div>
-    </div>
-  </aside>
-</div>
-
-<div class="autocomplete-box" id="verse-autocomplete" aria-live="polite"></div>
-
-<div class="modal-overlay" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title" aria-hidden="true">
-  <div class="modal">
-    <div class="modal-header"><h2 id="settings-title">⚙️ Settings</h2><button class="btn btn-ghost btn-sm" onclick="closeSettings()">✕</button></div>
-    <div class="modal-body">
-      <div class="form-group"><label>Language</label><select id="lang-select"><option value="en-NG">English (NG)</option><option value="en-US">English (US)</option><option value="en-UK">English (UK)</option><option value="yo-NG">Yoruba (NG)</option><option value="ig-NG">Igbo (NG)</option><option value="ha-NG">Hausa (NG)</option></select></div>
-      <div class="form-group"><label>Speaker Label</label><select id="speaker-select"><option value="Pastor">Pastor</option><option value="Guest Speaker">Guest Speaker</option><option value="Bible Reader">Bible Reader</option><option value="Choir / Worship">Choir / Worship</option><option value="None">None</option></select></div>
-      <div class="form-group"><label>Auto-save interval (seconds)</label><input type="number" id="auto-save-interval" value="10" min="3" max="60"></div>
-      <div class="form-group"><label>Default Preacher Name</label><input type="text" id="default-preacher" placeholder="e.g. Pastor John"></div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeSettings()">Cancel</button><button class="btn btn-primary" onclick="saveSettingsHandler()">Save</button></div>
+<div id="sidebar-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:44"></div>
+<div class="app-shell">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><span class="sidebar-title">&#128214; Sermons</span><button class="btn btn-sm btn-primary" onclick="newSermon()">+ New</button></div>
+  <div class="sidebar-body">
+    <div class="form-group"><input type="search" id="search-input" placeholder="Search sermons, preachers, series..." aria-label="Search sermons"></div>
+    <div id="sermon-list" role="list"></div>
+    <div id="series-list" class="form-group" style="margin-top:.75rem"></div>
   </div>
-</div>
-
-<div class="modal-overlay" id="backup-modal" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal">
-    <div class="modal-header"><h2>💾 Backup & Restore</h2><button class="btn btn-ghost btn-sm" onclick="closeBackup()">✕</button></div>
-    <div class="modal-body">
-      <p>Export all sermons, devotions, prayers, bulletins, and settings as a JSON file.</p>
-      <button class="btn btn-primary btn-block" onclick="doBackup()">Download Backup</button>
-      <hr style="margin:1rem 0;border-color:var(--border)">
-      <p>Restore from a previously exported JSON file.</p>
-      <button class="btn btn-ghost btn-block" onclick="doRestore()">Upload Backup File</button>
-    </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeBackup()">Close</button></div>
+  <div class="sidebar-footer">
+    <button class="btn btn-ghost btn-sm btn-block" onclick="openBackup()">&#128190; Backup</button>
+    <button class="btn btn-ghost btn-sm btn-block" onclick="openSettings()">&#9881; Settings</button>
+    <button class="btn btn-ghost btn-sm btn-block" onclick="openChurchBranding()">&#127963; Branding</button>
+    <button class="btn btn-ghost btn-sm btn-block" onclick="openSermonTimer()">&#9201; Sermon Timer</button>
+    <div style="margin-top:.5rem;font-size:.7rem">v4.0.0 &#183; HMG Concepts</div>
   </div>
-</div>
-
-<div class="modal-overlay" id="find-replace-modal" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal">
-    <div class="modal-header"><h2>🔍 Find & Replace</h2><button class="btn btn-ghost btn-sm" onclick="closeFindReplace()">✕</button></div>
-    <div class="modal-body">
-      <div class="form-group"><label>Find</label><input type="text" id="fr-find"></div>
-      <div class="form-group"><label>Replace</label><input type="text" id="fr-replace"></div>
-      <label><input type="checkbox" id="fr-regex" style="width:auto;margin-right:.4rem">Use regular expression</label>
-    </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeFindReplace()">Cancel</button><button class="btn btn-primary" onclick="doFindReplace()">Replace All</button></div>
+</aside>
+<main class="main-stage" id="main-content">
+  <div class="editor-toolbar">
+    <button onclick="formatDoc('bold')" title="Bold"><b>B</b></button>
+    <button onclick="formatDoc('italic')" title="Italic"><i>I</i></button>
+    <button onclick="formatDoc('underline')" title="Underline"><u>U</u></button>
+    <button onclick="formatDoc('strikethrough')" title="Strikethrough"><s>S</s></button>
+    <button onclick="formatDoc('insertUnorderedList')" title="Bullet List">&#8226;</button>
+    <button onclick="formatDoc('insertOrderedList')" title="Numbered List">1.</button>
+    <button onclick="formatDoc('formatBlock','h2')" title="Heading 2">H2</button>
+    <button onclick="formatDoc('formatBlock','h3')" title="Heading 3">H3</button>
+    <button onclick="formatDoc('formatBlock','blockquote')" title="Quote">&#10077;</button>
+    <div class="toolbar-divider"></div>
+    <button onclick="insertTemplate('expository')" title="Expository">&#128203; Exp</button>
+    <button onclick="insertTemplate('topical')" title="Topical">&#128203; Top</button>
+    <button onclick="insertTemplate('testimony')" title="Testimony">&#128203; Tst</button>
+    <button onclick="addBookmark()" title="Bookmark">&#128278;</button>
+    <button onclick="openFindReplace()" title="Find &amp; Replace">&#128269;</button>
+    <button onclick="openFillerRemoval()" title="Remove Filler Words">&#9986;</button>
+    <button onclick="openWordCloud()" title="Word Cloud">&#9729;</button>
   </div>
-</div>
-
-<div class="modal-overlay" id="outline-modal" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal">
-    <div class="modal-header"><h2>📝 Sermon Outline</h2><button class="btn btn-ghost btn-sm" onclick="closeModal('outline-modal')">✕</button></div>
-    <div class="modal-body"><textarea id="outline-preview" style="width:100%;min-height:240px;font-family:system-ui"></textarea></div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('outline-modal')">Close</button><button class="btn btn-primary" onclick="downloadOutline()">Download MD</button></div>
+  <div class="meta-bar">
+    <input type="text" id="sermon-title" placeholder="Sermon Title">
+    <input type="text" id="preacher-name" placeholder="Preacher Name">
+    <select id="series-select"><option value="">No Series</option></select>
+    <select id="lang-select"><option value="en-NG">English (Nigeria)</option><option value="en-US">English (US)</option><option value="en-GB">English (UK)</option><option value="yo-NG">Yoruba</option><option value="ig-NG">Igbo</option><option value="ha-NG">Hausa</option><option value="es-ES">Spanish</option><option value="fr-FR">French</option><option value="pt-BR">Portuguese</option><option value="sw-KE">Swahili</option><option value="zh-CN">Chinese</option></select>
+    <select id="speaker-select"><option value="Pastor">Pastor</option><option value="Minister">Minister</option><option value="Evangelist">Evangelist</option><option value="Deacon">Deacon</option><option value="Bishop">Bishop</option><option value="Apostle">Apostle</option><option value="Speaker">Speaker</option></select>
   </div>
-</div>
-
-<div class="modal-overlay" id="discussion-modal" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal">
-    <div class="modal-header"><h2>💬 Discussion Questions</h2><button class="btn btn-ghost btn-sm" onclick="closeModal('discussion-modal')">✕</button></div>
-    <div class="modal-body"><textarea id="discussion-preview" style="width:100%;min-height:240px;font-family:system-ui"></textarea></div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('discussion-modal')">Close</button><button class="btn btn-primary" onclick="downloadDiscussion()">Download MD</button></div>
+  <div class="status-bar" id="status-bar"><span id="word-count">0 words</span><span id="sentence-count">0 sentences</span><span id="paragraph-count">0 paragraphs</span><span id="read-time">~0 min read</span><span id="grade-level">Grade 0</span><span id="last-saved">Not saved yet</span></div>
+  <div class="recording-hud" id="record-hud" style="display:none"><span class="recording-indicator">&#128308;</span><span id="record-time">0:00</span><span id="record-status">Listening...</span></div>
+  <div id="audio-upload-zone" class="audio-upload-zone"><p>&#127911; Drag &amp; drop audio file or click to upload</p></div>
+  <div id="audio-attachment"></div>
+  <div class="editor-card">
+    <div class="editor-card-header"><span>&#128221; Sermon Notes</span><div class="editor-actions"><button class="btn btn-sm" onclick="openExport()">&#128230; Export</button><button class="btn btn-sm" onclick="openShare()">&#128279; Share</button><button class="btn btn-sm btn-danger" onclick="deleteCurrentSermon()">&#128465; Delete</button></div></div>
+    <div class="sermon-editor" id="editor" contenteditable="true" role="textbox" aria-multiline="true"><h2>Introduction</h2><p>Start typing or press the microphone to begin transcribing...</p></div>
   </div>
-</div>
-
-<div class="modal-overlay" id="flashcard-modal" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal">
-    <div class="modal-header"><h2>🎴 Scripture Flashcards</h2><button class="btn btn-ghost btn-sm" onclick="closeModal('flashcard-modal')">✕</button></div>
-    <div class="modal-body" id="flashcard-container"></div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('flashcard-modal')">Close</button><button class="btn btn-primary" onclick="saveAllFlashcards()">Save All</button></div>
+  <div class="action-bar">
+    <button id="record-btn" class="btn btn-primary btn-lg" onclick="toggleRecording()">&#127897; Start Recording</button>
+    <button id="pause-btn" class="btn btn-ghost btn-lg" onclick="togglePauseRecording()" style="display:none">&#9208; Pause</button>
+    <button class="btn btn-lg" onclick="openPresent()">&#128250; Present</button>
+    <button class="btn btn-lg" onclick="openWordCloud()">&#9729; Word Cloud</button>
+    <button class="btn btn-lg" onclick="openOutlineGenerator()">&#128221; Outline</button>
+    <button class="btn btn-lg" onclick="openDiscussionGenerator()">&#128172; Discussion</button>
+    <button class="btn btn-lg" onclick="openFlashcards()">&#127188; Flashcards</button>
+    <button class="btn btn-lg" onclick="openRepurposer()">&#128640; Repurpose</button>
+    <button class="btn btn-lg" onclick="openSermonTimer()">&#9201; Timer</button>
   </div>
-</div>
-
-<div class="modal-overlay" id="branding-modal" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal">
-    <div class="modal-header"><h2>🏛 Church Branding</h2><button class="btn btn-ghost btn-sm" onclick="closeModal('branding-modal')">✕</button></div>
-    <div class="modal-body">
-      <div class="form-group"><label>Church Name</label><input type="text" id="cb-name"></div>
-      <div class="form-group"><label>Accent Color</label><input type="color" id="cb-color" value="#d97706"></div>
-      <div class="form-group"><label>Logo URL</label><input type="url" id="cb-logo" placeholder="https://..."></div>
-      <div class="form-group"><label>Contact Phone</label><input type="tel" id="cb-phone" placeholder="+234..."></div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('branding-modal')">Cancel</button><button class="btn btn-primary" onclick="saveChurchBranding()">Save</button></div>
+  <div class="right-panel-tabs">
+    <button class="panel-tab active" data-tab="detected" onclick="setBibleTab('detected')">&#128214; Detected</button>
+    <button class="panel-tab" data-tab="common" onclick="setBibleTab('common')">&#128218; Common</button>
+    <button class="panel-tab" data-tab="bookmarks" onclick="setBibleTab('bookmarks')">&#128278; Bookmarks</button>
+    <button class="panel-tab" data-tab="prayers" onclick="setBibleTab('prayers')">&#128591; Prayers</button>
+    <button class="panel-tab" data-tab="keywords" onclick="setBibleTab('keywords')">&#127991; Themes</button>
+    <button class="panel-tab" data-tab="quotes" onclick="setBibleTab('quotes')">&#128172; Quotes</button>
   </div>
+  <div id="bible-panel" class="panel-card"></div>
+  <div id="keyword-panel" class="panel-card"></div>
+  <div id="prayer-panel" class="panel-card"></div>
+  <div id="quote-panel" class="panel-card"></div>
+  <div id="bookmark-panel" class="panel-card"></div>
+</main>
 </div>
-
-<div class="modal-overlay" id="share-modal" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal">
-    <div class="modal-header"><h2>🔗 Share Sermon</h2><button class="btn btn-ghost btn-sm" onclick="closeModal('share-modal')">✕</button></div>
-    <div class="modal-body">
-      <div class="form-group"><label>Shareable URL</label><input type="text" id="share-url" readonly onclick="this.select()"></div>
-      <div id="share-qr" style="text-align:center"></div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('share-modal')">Close</button><button class="btn btn-primary" onclick="copyShareURL()">Copy</button></div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="live-qr-modal" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal">
-    <div class="modal-header"><h2>📡 Live QR</h2><button class="btn btn-ghost btn-sm" onclick="closeModal('live-qr-modal')">✕</button></div>
-    <div class="modal-body" id="live-qr-modal-body"></div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('live-qr-modal')">Close</button></div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="import-share-modal" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal">
-    <div class="modal-header"><h2>📥 Import Shared Sermon</h2><button class="btn btn-ghost btn-sm" onclick="closeModal('import-share-modal')">✕</button></div>
-    <div class="modal-body"><p>A sermon has been shared with you: <strong id="import-share-title">Untitled</strong></p></div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('import-share-modal')">Cancel</button><button class="btn btn-primary" id="import-share-btn">Import</button></div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="timer-modal" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal">
-    <div class="modal-header"><h2>⏱️ Sermon Timer</h2><button class="btn btn-ghost btn-sm" onclick="closeModal('timer-modal')">✕</button></div>
-    <div class="modal-body">
-      <div class="form-group"><label>Minutes</label><input type="number" id="timer-minutes" value="30" min="5" max="180"></div>
-      <div class="timer-display" id="timer-display">30:00</div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('timer-modal')">Close</button>
-      <button class="btn btn-danger" onclick="stopSermonTimer()">Stop</button>
-      <button class="btn btn-primary" onclick="startSermonTimer()">Start</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="repurpose-modal" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal" style="max-width: 800px;">
-    <div class="modal-header"><h2>🚀 Content Repurposer</h2><button class="btn btn-ghost btn-sm" onclick="closeModal('repurpose-modal')">✕</button></div>
-    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-      <div class="panel-tabs" style="margin-bottom: 1rem;">
-        <button class="panel-tab active" data-tab="social" onclick="setRepurposeTab('social')" role="tab">📱 Social Kit</button>
-        <button class="panel-tab" data-tab="blog" onclick="setRepurposeTab('blog')" role="tab">✍️ Blog Draft</button>
-        <button class="panel-tab" data-tab="email" onclick="setRepurposeTab('email')" role="tab">📧 Newsletter</button>
-      </div>
-      <div id="repurpose-content" style="white-space: pre-wrap; font-family: system-ui; background: var(--bg-secondary); padding: 1rem; border-radius: 8px; border: 1px solid var(--border);"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('repurpose-modal')">Close</button>
-      <button class="btn btn-primary" onclick="copyRepurposeContent()">Copy Selected</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="word-cloud-modal" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal">
-    <div class="modal-header"><h2>☁️ Word Cloud</h2><button class="btn btn-ghost btn-sm" onclick="closeModal('word-cloud-modal')">✕</button></div>
-    <div class="modal-body"><canvas id="word-cloud-canvas" class="word-cloud-canvas"></canvas></div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('word-cloud-modal')">Close</button></div>
-  </div>
-</div>
-
+<div id="verse-autocomplete" class="verse-autocomplete" style="display:none"></div>
+<div id="export-drawer" class="drawer" aria-hidden="true"><div class="drawer-content"><h2>&#128230; Export Options</h2>
+  <button class="btn btn-block" onclick="doExport('txt')">&#128221; Plain Text (.txt)</button>
+  <button class="btn btn-block" onclick="doExport('md')">&#128196; Markdown (.md)</button>
+  <button class="btn btn-block" onclick="doExport('html')">&#127760; HTML (.html)</button>
+  <button class="btn btn-block" onclick="doExport('docx')">&#128213; Word (.doc)</button>
+  <button class="btn btn-block" onclick="doExport('print')">&#128424; Print / PDF</button>
+  <button class="btn btn-block" onclick="doExport('srt')">&#127916; Subtitles (.srt)</button>
+  <button class="btn btn-block" onclick="doExport('devotional')">&#128591; 5-Day Devotional (.md)</button>
+  <button class="btn btn-block" onclick="doExport('json')">&#9881; JSON</button>
+  <button class="btn btn-block" onclick="doExport('rss')">&#128225; Podcast RSS</button>
+  <button class="btn btn-block" onclick="doExport('whatsapp')">&#128172; WhatsApp</button>
+  <button class="btn btn-block" onclick="doExport('native')">&#128241; Native Share</button>
+  <button class="btn btn-block" onclick="doImport()">&#128229; Import .txt / .md</button>
+  <button class="btn btn-block btn-ghost" onclick="closeExport()">&#10005; Close</button>
+</div></div>
 <div class="drawer-overlay" onclick="closeExport()"></div>
-<div class="drawer" id="export-drawer" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="drawer-header"><h2>📤 Export</h2><button class="btn btn-ghost btn-sm" onclick="closeExport()">✕</button></div>
-  <div class="drawer-body" style="display:flex;flex-direction:column;gap:.5rem">
-    <button class="btn btn-ghost btn-block" onclick="doExport('txt')">📝 Plain Text (.txt)</button>
-    <button class="btn btn-ghost btn-block" onclick="doExport('md')">📄 Markdown (.md)</button>
-    <button class="btn btn-ghost btn-block" onclick="doExport('html')">🌐 HTML (.html)</button>
-    <button class="btn btn-ghost btn-block" onclick="doExport('docx')">📘 Word (.doc)</button>
-    <button class="btn btn-ghost btn-block" onclick="doExport('print')">🖨️ Print / PDF</button>
-    <button class="btn btn-ghost btn-block" onclick="doExport('srt')">🎬 Subtitles (.srt)</button>
-    <button class="btn btn-ghost btn-block" onclick="doExport('devotional')">🙏 5-Day Devotional (.md)</button>
-    <button class="btn btn-ghost btn-block" onclick="doExport('json')">⚙️ JSON</button>
-    <button class="btn btn-ghost btn-block" onclick="doExport('rss')">📡 Podcast RSS</button>
-    <button class="btn btn-ghost btn-block" onclick="doExport('whatsapp')">💬 WhatsApp</button>
-    <button class="btn btn-ghost btn-block" onclick="doExport('native')">📱 Native Share</button>
-    <button class="btn btn-ghost btn-block" id="import-txt-btn">📥 Import .txt / .md</button>
-  </div>
-</div>
-
-<div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
-
-<footer style="text-align:center;padding:1.5rem;color:var(--text-muted);font-size:.85rem;border-top:1px solid var(--border);margin-top:1rem">
-  <p>© 2015 — 2026 <strong>HMG Concepts</strong> (His Marvellous Grace). Lagos, Nigeria.</p>
-  <p>FaithTech product of <a href="https://hmggospel.pages.dev" target="_blank">HMG Gospel</a> · <a href="./features.html">Features</a> · <a href="./deploy.html">Deploy</a> · <a href="./about.html">About</a></p>
-</footer>
+<div id="settings-modal" class="modal-overlay" aria-hidden="true"><div class="modal"><h2>&#9881; Settings</h2>
+  <div class="form-group"><label>Font Size: <span id="font-size-value">16</span>px</label><input type="range" id="font-size-slider" min="12" max="24" value="16"></div>
+  <div class="form-group"><label><input type="checkbox" id="high-contrast-toggle"> High Contrast Mode</label></div>
+  <div class="form-group"><label><input type="checkbox" id="dyslexic-font-toggle"> Dyslexic-Friendly Font</label></div>
+  <div class="form-group"><label><input type="checkbox" id="reading-mode-toggle"> Reading Mode</label></div>
+  <div class="form-group"><label for="translation-select">Bible Translation</label><select id="translation-select"><option value="kjv">KJV</option><option value="niv">NIV</option><option value="esv">ESV</option><option value="nkjv">NKJV</option><option value="nlt">NLT</option></select></div>
+  <div class="form-actions"><button class="btn btn-primary" onclick="closeSettings()">&#10003; Save</button><button class="btn btn-ghost" onclick="closeSettings()">Cancel</button></div>
+</div></div>
+<div id="backup-modal" class="modal-overlay" aria-hidden="true"><div class="modal"><h2>&#128190; Backup &amp; Restore</h2>
+  <button class="btn btn-block btn-primary" onclick="doBackup()">&#128229; Download Full Backup (.json)</button>
+  <button class="btn btn-block" onclick="doRestore()">&#128230; Restore from Backup (.json)</button>
+  <p style="margin-top:1rem;font-size:.85rem;color:var(--text-muted)">All sermons, devotions, prayers, bulletins, series, and settings are backed up as a single JSON file.</p>
+  <div class="form-actions"><button class="btn btn-ghost" onclick="closeBackup()">&#10005; Close</button></div>
+</div></div>
+<div id="share-modal" class="modal-overlay" aria-hidden="true"><div class="modal"><h2>&#128279; Share Sermon</h2>
+  <div class="form-group"><label for="share-url">Shareable URL:</label><input type="text" id="share-url" readonly><button class="btn btn-sm" onclick="copyShareURL()">&#128203; Copy</button></div>
+  <div id="share-qr"></div>
+  <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal('share-modal')">&#10005; Close</button></div>
+</div></div>
+<div id="import-share-modal" class="modal-overlay" aria-hidden="true"><div class="modal"><h2>&#128229; Import Shared Sermon</h2><p id="import-share-title"></p><div class="form-actions"><button id="import-share-btn" class="btn btn-primary">&#10003; Import</button><button class="btn btn-ghost" onclick="closeModal('import-share-modal')">&#10005; Cancel</button></div></div></div>
+<div id="find-replace-modal" class="modal-overlay" aria-hidden="true"><div class="modal"><h2>&#128269; Find &amp; Replace</h2>
+  <div class="form-group"><label for="fr-find">Find:</label><input type="text" id="fr-find" placeholder="Search text..."></div>
+  <div class="form-group"><label for="fr-replace">Replace with:</label><input type="text" id="fr-replace" placeholder="Replacement..."></div>
+  <div class="form-group"><label><input type="checkbox" id="fr-regex"> Use Regular Expression</label></div>
+  <div class="form-actions"><button class="btn btn-primary" onclick="doFindReplace()">Replace All</button><button class="btn btn-ghost" onclick="closeFindReplace()">&#10005; Close</button></div>
+</div></div>
+<div id="outline-modal" class="modal-overlay" aria-hidden="true"><div class="modal modal-lg"><h2>&#128221; Generated Outline</h2>
+  <textarea id="outline-preview" rows="15" readonly style="width:100%;font-family:monospace;font-size:.9rem;resize:vertical"></textarea>
+  <div class="form-actions"><button class="btn btn-primary" onclick="downloadOutline()">&#128229; Download</button><button class="btn btn-ghost" onclick="closeModal('outline-modal')">&#10005; Close</button></div>
+</div></div>
+<div id="discussion-modal" class="modal-overlay" aria-hidden="true"><div class="modal modal-lg"><h2>&#128172; Discussion Questions</h2>
+  <textarea id="discussion-preview" rows="15" readonly style="width:100%;font-family:monospace;font-size:.9rem;resize:vertical"></textarea>
+  <div class="form-actions"><button class="btn btn-primary" onclick="downloadDiscussion()">&#128229; Download</button><button class="btn btn-ghost" onclick="closeModal('discussion-modal')">&#10005; Close</button></div>
+</div></div>
+<div id="flashcard-modal" class="modal-overlay" aria-hidden="true"><div class="modal modal-lg"><h2>&#127188; Sermon Flashcards</h2><p>Click each card to reveal the answer.</p><div id="flashcard-container" class="flashcard-grid"></div>
+  <div class="form-actions"><button class="btn btn-primary" onclick="saveAllFlashcards()">&#128190; Save All</button><button class="btn btn-ghost" onclick="closeModal('flashcard-modal')">&#10005; Close</button></div>
+</div></div>
+<div id="repurpose-modal" class="modal-overlay" aria-hidden="true"><div class="modal modal-lg"><h2>&#128640; Repurpose Sermon</h2>
+  <div class="tabs"><button class="panel-tab active" data-tab="social" onclick="setRepurposeTab('social')">&#128241; Social</button><button class="panel-tab" data-tab="blog" onclick="setRepurposeTab('blog')">&#128221; Blog</button><button class="panel-tab" data-tab="email" onclick="setRepurposeTab('email')">&#128231; Newsletter</button></div>
+  <div id="repurpose-content" class="repurpose-content"></div>
+  <div class="form-actions"><button class="btn btn-primary" onclick="copyRepurposeContent()">&#128203; Copy</button><button class="btn btn-ghost" onclick="closeModal('repurpose-modal')">&#10005; Close</button></div>
+</div></div>
+<div id="timer-modal" class="modal-overlay" aria-hidden="true"><div class="modal"><h2>&#9201; Sermon Timer</h2>
+  <div class="form-group"><label for="timer-minutes">Minutes:</label><input type="number" id="timer-minutes" value="30" min="1" max="120"></div>
+  <div class="form-group" style="text-align:center;font-size:2.5rem;font-weight:800;color:var(--accent)"><span id="timer-display">00:00</span></div>
+  <div class="form-actions"><button class="btn btn-primary" onclick="startSermonTimer()">&#9654; Start</button><button class="btn btn-danger" onclick="stopSermonTimer()">&#9209; Stop</button><button class="btn btn-ghost" onclick="closeSermonTimer()">&#10005; Close</button></div>
+</div></div>
+<div id="word-cloud-modal" class="modal-overlay" aria-hidden="true"><div class="modal modal-lg"><h2>&#9729; Word Cloud</h2>
+  <canvas id="word-cloud-canvas" width="600" height="400" style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--surface)"></canvas>
+  <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal('word-cloud-modal')">&#10005; Close</button></div>
+</div></div>
+<div id="branding-modal" class="modal-overlay" aria-hidden="true"><div class="modal"><h2>&#127963; Church Branding</h2>
+  <div class="form-group"><label for="cb-name">Church Name:</label><input type="text" id="cb-name" placeholder="e.g., Living Faith Church"></div>
+  <div class="form-group"><label for="cb-color">Brand Color:</label><input type="color" id="cb-color" value="#d97706"></div>
+  <div class="form-group"><label for="cb-logo">Logo URL:</label><input type="url" id="cb-logo" placeholder="https://..."></div>
+  <div class="form-group"><label for="cb-phone">Contact Phone:</label><input type="tel" id="cb-phone" placeholder="+234..."></div>
+  <div class="form-actions"><button class="btn btn-primary" onclick="saveChurchBranding()">&#128190; Save</button><button class="btn btn-ghost" onclick="closeModal('branding-modal')">&#10005; Close</button></div>
+</div></div>
+<div id="live-qr-modal" class="modal-overlay" aria-hidden="true"><div class="modal"><h2>&#128225; Live Caption QR Code</h2><div id="live-qr-modal-body"></div><div class="form-actions"><button class="btn btn-ghost" onclick="closeModal('live-qr-modal')">&#10005; Close</button></div></div></div>
 </body>
 </html>
