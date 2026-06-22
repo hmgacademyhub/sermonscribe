@@ -12,6 +12,9 @@ import {
   lockOrientation, textToSpeech, stopSpeech, fileToText, parseMarkdownToHtml, setFontSize, fleschKincaid, sentenceCount, paragraphCount, shareViaNative
 } from './utils.js';
 
+import { generateSocialKit, generateBlogDraft, generateNewsletter } from './repurposer.js';
+import { generateAdvancedOutline } from './outline-generator.js';
+import { generateAdvancedDiscussionGuide } from './discussion-generator.js';
 import { detectReferences, getAllVerses, getVersesByBook, autocompleteVerse, getBooks, getTranslation, setTranslation, fetchVerse, getTranslations } from './bible.js';
 
 import {
@@ -268,6 +271,8 @@ function initUI() {
   $('#search-input')?.addEventListener('input', debounce((e) => { state.searchQuery = e.target.value; renderSermonList(); }, 300));
   $('#font-size-slider')?.addEventListener('input', (e) => { state.fontSize = parseInt(e.target.value); setFontSize(state.fontSize); saveSettings('fontSize', state.fontSize); });
   $('#high-contrast-toggle')?.addEventListener('change', (e) => { state.highContrast = e.target.checked; document.documentElement.setAttribute('data-theme', state.highContrast ? 'high-contrast' : state.theme); saveSettings('highContrast', state.highContrast); });
+  $('#dyslexic-font-toggle')?.addEventListener('change', (e) => { document.body.classList.toggle('dyslexic-font', e.target.checked); saveSettings('dyslexicFont', e.target.checked); });
+  $('#reading-mode-toggle')?.addEventListener('change', (e) => { document.body.classList.toggle('reading-mode', e.target.checked); saveSettings('readingMode', e.target.checked); });
   $('#translation-select')?.addEventListener('change', (e) => { setTranslation(e.target.value); saveSettings('translation', e.target.value); detectBibleReferences(); });
   initAudioUpload(); initImportHandlers();
 }
@@ -439,20 +444,16 @@ window.openLiveCaption = () => { if (!state.liveBroadcast) return; const url = s
 window.generateLiveQR = () => { if (!state.liveBroadcast) return; const url = state.liveBroadcast.getShareURL(); generateQRDataURL(url).then(dataUrl => { $('#live-qr-modal-body').innerHTML = `<img src="${dataUrl}" alt="QR Code" style="max-width:256px;border-radius:8px"><p>Congregation scans this to see live captions. Refresh QR every few minutes.</p>`; openModal('live-qr-modal'); }).catch(() => createToast('QR generation failed.', 'error')); };
 
 window.openOutlineGenerator = () => {
-  const s = getCurrentSermon(); if (!s) return; const text = stripHtml(s.content);
-  const sentences = text.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 30);
-  const headings = []; const paragraphs = text.split('\n').filter(p => p.trim().length > 50);
-  for (let i = 0; i < Math.min(5, paragraphs.length); i++) headings.push(paragraphs[i].slice(0, 80));
-  const outline = `# Sermon Outline: ${s.title}\n\n## Introduction\n${headings[0] || '[Intro summary]'}\n\n## Main Points\n${headings.slice(1, 4).map((h, i) => `${i + 1}. ${h}`).join('\n') || '[Main points]'}\n\n## Conclusion\n${headings[4] || '[Conclusion summary]'}\n\n## Key Scriptures\n${(s.verses || []).map(v => `- ${v.ref}`).join('\n') || '[Scriptures]'}\n`;
+  const s = getCurrentSermon(); if (!s) return;
+  const outline = generateAdvancedOutline(s);
   $('#outline-preview').value = outline; openModal('outline-modal');
 };
 window.downloadOutline = () => { const text = $('#outline-preview').value; const s = getCurrentSermon(); downloadBlob(`${slugify(s.title)}-outline.md`, 'text/markdown', text); closeModal('outline-modal'); createToast('Outline downloaded.', 'success'); };
 
 window.openDiscussionGenerator = () => {
   const s = getCurrentSermon(); if (!s) return;
-  const questions = generateDiscussionQuestions(s.tags || [], s.verses || [], s.title);
-  const text = `# Discussion Questions: ${s.title}\n\n${questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}\n`;
-  $('#discussion-preview').value = text; openModal('discussion-modal');
+  const guide = generateAdvancedDiscussionGuide(s);
+  $('#discussion-preview').value = guide; openModal('discussion-modal');
 };
 window.downloadDiscussion = () => { const text = $('#discussion-preview').value; const s = getCurrentSermon(); downloadBlob(`${slugify(s.title)}-discussion.md`, 'text/markdown', text); closeModal('discussion-modal'); createToast('Discussion guide downloaded.', 'success'); };
 
@@ -612,5 +613,30 @@ window.seekBookmark = seekBookmark; window.speakText = speakText; window.stopSpe
 window.openDevotionsPage = openDevotionsPage; window.openNotesPage = openNotesPage; window.openBulletinPage = openBulletinPage;
 window.openPrayerWallPage = openPrayerWallPage; window.openSermonTimer = openSermonTimer; window.startSermonTimer = startSermonTimer;
 window.stopSermonTimer = stopSermonTimer; window.openWordCloud = openWordCloud;
+window.toggleRecording = toggleRecording;
+
+window.openRepurposer = () => {
+  const s = getCurrentSermon(); if (!s) { createToast('Please write a sermon first.', 'warn'); return; }
+  openModal('repurpose-modal'); setRepurposeTab('social');
+};
+
+window.setRepurposeTab = (tab) => {
+  const s = getCurrentSermon();
+  const contentEl = $('#repurpose-content');
+  $$('#repurpose-modal .panel-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  if (tab === 'social') {
+    const { posts } = generateSocialKit(s);
+    contentEl.innerHTML = posts.map((p, i) => `<div><strong>Option ${i+1}:</strong><br>${p.facebook}</div><hr style="margin:1rem 0;opacity:.2">`).join('');
+  } else if (tab === 'blog') {
+    contentEl.textContent = generateBlogDraft(s);
+  } else if (tab === 'email') {
+    contentEl.textContent = generateNewsletter(s);
+  }
+};
+
+window.copyRepurposeContent = () => {
+  const text = $('#repurpose-content').textContent;
+  navigator.clipboard.writeText(text).then(() => createToast('Copied to clipboard!', 'success'));
+};
 
 document.addEventListener('DOMContentLoaded', init);
