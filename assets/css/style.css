@@ -325,3 +325,18 @@ body.focus-mode .main-stage { max-width: 800px; margin: 0 auto; }
 .items-center { align-items: center; }
 .justify-between { justify-content: space-between; }
 .w-full { width: 100%; }
+
+/* Accessibility Enhancements */
+.dyslexic-font {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', cursive, sans-serif !important;
+}
+.reading-mode {
+  --bg-primary: #fdf6e3;
+  --bg-secondary: #eee8d5;
+  --text-primary: #586e75;
+  --accent: #b58900;
+}
+.reading-mode .main-stage {
+  max-width: 800px;
+  margin: 0 auto;
+}
