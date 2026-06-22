@@ -1,65 +1,23 @@
-/* ============================================
- HMG SermonScribe v3 — Advanced Outline Generator
- ============================================ */
-
-import { stripHtml, getKeywords, extractTopSentences } from './utils.js';
+/* HMG SermonScribe v4 - Outline Generator */
+import { stripHtml, getKeywords, detectReferences, wordCount, fleschKincaid } from './utils.js';
 
 export function generateAdvancedOutline(sermon) {
-  const content = sermon.content || '';
-  const text = stripHtml(content);
+  const text = stripHtml(sermon.content);
   const keywords = getKeywords(text);
-  
-  // Extract sections based on headings
-  const sections = [];
-  const div = document.createElement('div');
-  div.innerHTML = content;
-  
-  const headings = div.querySelectorAll('h2, h3');
-  if (headings.length > 0) {
-    headings.forEach((h, i) => {
-      let nextEl = h.nextElementSibling;
-      let sectionText = '';
-      while (nextEl && nextEl.tagName !== 'H2' && nextEl.tagName !== 'H3') {
-        sectionText += nextEl.textContent + ' ';
-        nextEl = nextEl.nextElementSibling;
-      }
-      sections.push({
-        title: h.textContent.trim(),
-        level: h.tagName,
-        summary: extractTopSentences(sectionText, 1)[0] || 'No detailed summary available.'
-      });
-    });
+  const verses = detectReferences(text);
+  const wc = wordCount(text);
+  const fk = fleschKincaid(text);
+  let outline = `# Sermon Outline: ${sermon.title}\n\n**Preacher:** ${sermon.preacher || 'Unknown'}\n**Date:** ${sermon.date || 'N/A'}\n**Series:** ${sermon.series || 'N/A'}\n**Duration:** ${sermon.duration || 'N/A'}\n**Word Count:** ${wc}\n**Readability:** Grade ${fk.grade}\n\n---\n\n`;
+  outline += `## Introduction\n\n- **Topic:** ${sermon.title}\n- **Main Text:** ${verses.length > 0 ? verses[0].ref : 'TBD'}\n- **Key Theme:** ${keywords[0] || 'TBD'}\n\n`;
+  const h2Matches = sermon.content.match(/<h2>(.*?)<\/h2>/g) || [];
+  if (h2Matches.length > 0) {
+    outline += `## Main Points\n\n`;
+    h2Matches.forEach((m, i) => { const title = m.replace(/<h2>/g,'').replace(/<\/h2>/g,''); outline += `### Point ${i+1}: ${title}\n\n`; });
   } else {
-    // Fallback if no headings: split by paragraphs
-    const paragraphs = text.split(/\n+/).filter(p => p.trim().length > 50);
-    paragraphs.slice(0, 5).forEach((p, i) => {
-      sections.push({
-        title: `Key Point ${i+1}`,
-        level: 'H2',
-        summary: p.slice(0, 120) + '...'
-      });
-    });
+    outline += `## Main Points\n\n1. Point One\n2. Point Two\n3. Point Three\n\n`;
   }
-
-  let outline = `# Sermon Outline: ${sermon.title}\n`;
-  outline += `**Date:** ${sermon.date} | **Preacher:** ${sermon.preacher}\n\n`;
-  
-  outline += `## 🎯 Core Theme\n${keywords.join(', ') || 'General Faith'}\n\n`;
-  
-  outline += `## 📖 Structure\n`;
-  sections.forEach(s => {
-    const prefix = s.level === 'H2' ? '###' : '####';
-    outline += `${prefix} ${s.title}\n> ${s.summary}\n\n`;
-  });
-  
-  outline += `## 🔑 Key Verses\n`;
-  if (sermon.verses && sermon.verses.length > 0) {
-    outline += sermon.verses.map(v => `- ${v.ref}: ${v.text}`).join('\n');
-  } else {
-    outline += `No specific verses recorded.`;
-  }
-  
-  outline += `\n\n## 💡 Final Application\nReflect on how these points challenge your current walk with Christ.`;
-  
+  outline += `## Scripture References\n\n`;
+  if (verses.length > 0) { verses.forEach(v => { outline += `- ${v.ref}: ${v.text || 'TBD'}\n`; }); } else { outline += `- No scripture references detected\n`; }
+  outline += `\n## Application\n\n- Personal Application: What does this mean for your life?\n- Church Application: How does this apply to our community?\n- Action Steps: What will you do this week?\n\n## Conclusion\n\n- Summary of key points\n- Call to action\n- Closing prayer\n`;
   return outline;
 }
