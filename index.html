@@ -141,6 +141,7 @@
       <button class="btn btn-ghost" onclick="openOutlineGenerator()">📝 Outline</button>
       <button class="btn btn-ghost" onclick="openDiscussionGenerator()">💬 Discussion</button>
       <button class="btn btn-ghost" onclick="openFlashcards()">🎴 Flashcards</button>
+      <button class="btn btn-primary" onclick="openRepurposer()">🚀 Repurpose</button>
     </div>
   </main>
 
@@ -184,6 +185,10 @@
           <input type="range" id="font-size-slider" min="12" max="32" value="16" style="width:100%">
           <label style="margin-top:.5rem">High Contrast</label>
           <input type="checkbox" id="high-contrast-toggle" style="width:auto">
+          <label style="margin-top:.5rem">Dyslexic Font</label>
+          <input type="checkbox" id="dyslexic-font-toggle" style="width:auto">
+          <label style="margin-top:.5rem">Reading Mode</label>
+          <input type="checkbox" id="reading-mode-toggle" style="width:auto">
           <label style="margin-top:.5rem">Translation</label>
           <select id="translation-select" style="width:100%"><option value="kjv">KJV</option><option value="niv">NIV</option><option value="esv">ESV</option><option value="nlt">NLT</option><option value="amp">AMP</option><option value="msg">MSG</option></select>
         </div>
@@ -308,6 +313,24 @@
       <button class="btn btn-ghost" onclick="closeModal('timer-modal')">Close</button>
       <button class="btn btn-danger" onclick="stopSermonTimer()">Stop</button>
       <button class="btn btn-primary" onclick="startSermonTimer()">Start</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="repurpose-modal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal" style="max-width: 800px;">
+    <div class="modal-header"><h2>🚀 Content Repurposer</h2><button class="btn btn-ghost btn-sm" onclick="closeModal('repurpose-modal')">✕</button></div>
+    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+      <div class="panel-tabs" style="margin-bottom: 1rem;">
+        <button class="panel-tab active" data-tab="social" onclick="setRepurposeTab('social')" role="tab">📱 Social Kit</button>
+        <button class="panel-tab" data-tab="blog" onclick="setRepurposeTab('blog')" role="tab">✍️ Blog Draft</button>
+        <button class="panel-tab" data-tab="email" onclick="setRepurposeTab('email')" role="tab">📧 Newsletter</button>
+      </div>
+      <div id="repurpose-content" style="white-space: pre-wrap; font-family: system-ui; background: var(--bg-secondary); padding: 1rem; border-radius: 8px; border: 1px solid var(--border);"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('repurpose-modal')">Close</button>
+      <button class="btn btn-primary" onclick="copyRepurposeContent()">Copy Selected</button>
     </div>
   </div>
 </div>
